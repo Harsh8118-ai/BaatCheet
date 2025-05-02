@@ -46,12 +46,7 @@ export function Sidebar() {
           <Link to="/" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
             <FiHome /> Home
           </Link>
-          <Link to="/questions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
-            <RiQuestionAnswerLine /> Questions
-          </Link>
-          <Link to="/discussions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
-            <FiBook /> Discussions
-          </Link>
+          
           <Link to="/friends" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
             <FiUsers /> Friends
           </Link>
@@ -59,14 +54,7 @@ export function Sidebar() {
           {/* Divider */}
           <div className="border-b border-gray-400 my-3"></div>
 
-          {/* Personal Section */}
-          <p className="text-gray-400 text-sm px-2">Personal</p>
-          <Link to="/my-questions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
-            <RiAddLine /> My Questions
-          </Link>
-          <Link to="/bookmarked" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
-            <RiBookmarkLine /> Bookmarks
-          </Link>
+          
         </nav>
 
         {/* Divider before Profile Section */}

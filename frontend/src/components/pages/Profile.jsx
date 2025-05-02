@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import InviteCode from "./Friends-User/InviteCode"; 
 import { useAuth } from "../store/UseAuth";
-import ProfileTabs from "./Profile/ProfileTabs";
+
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -151,10 +151,7 @@ const Profile = () => {
         </div>
       </motion.div>
 
-      {/* Right Panel (Tabs) */}
-      <div className="w-full md:w-2/3">
-        <ProfileTabs />
-      </div>
+      
     </div>
   
   </>

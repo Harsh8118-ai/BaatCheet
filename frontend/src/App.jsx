@@ -11,10 +11,9 @@ import HomePage from "./HomePage";
 import AuthSuccess from "./components/store/AuthSuccess";
 import Friends from "./components/pages/Friends-User/Friends";
 import FriendRequests from "./components/pages/Friends-User/FriendRequests";
-import ChatPage from "./components/pages/Friends-User/ChatPage";
-import ToggleQues from "./components/pages/Questions/ToggleQues";
-import MyQues from "./components/pages/Questions/MyQues";
+import ChatPage from "./components/pages/Chat/ChatPage";
 import { useAuth } from "./components/store/UseAuth";
+import { MoodProvider } from "./components/pages/Chat/MoodContext";
 
 export default function App() {
   const { user } = useAuth();
@@ -33,10 +32,11 @@ export default function App() {
 
         {/* ✅ Main Content Wrapper */}
         <div className="flex-1 overflow-y-auto bg-gray-950 mx-5">
+        <MoodProvider >
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/questions" element={<ToggleQues />} />
-            <Route path="/bookmarked" element={<Bookmarked />} />
+            
+            
             <Route path="/settings" element={<Settings />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
@@ -45,17 +45,8 @@ export default function App() {
             <Route path="/friends" element={<Friends />} />
             <Route path="/friend-requests" element={<FriendRequests />} />
             <Route path="/chat/:friendId" element={<ChatPage />} />
-            <Route
-              path="/my-questions"
-              element={
-                <>
-                  <h1 className="text-white text-2xl font-bold">My Questions</h1>
-                  <MyQues userId={user ? user._id : storedUserId} />
-                </>
-              }
-            />
-
           </Routes>
+          </MoodProvider>
         </div>
       </div></div>
 

@@ -12,12 +12,9 @@ require("./utils/passport-config");
 // ✅ Import Routes
 const authRoute = require("./routes/auth-route");
 const oauthRoute = require("./routes/oauth-route");
-const quesRoute = require("./routes/ques-route");
 const friendRoute = require("./routes/friend-route");
-const messageRoute = require("./routes/chat-route"); 
+const messageRoute = require("./routes/chat-route");
 const otpRoutes = require("./routes/otp-route");
-
-
 
 // ✅ Import WebSocket Controller
 const initializeSocket = require("./controllers/webSocket-controllers");
@@ -26,9 +23,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === "production"
-      ? ["https://silkenglamour.com", "https://www.silkenglamour.com", "https://silken-glamour.vercel.app", "https://silkenglamour.netlify.app"]
-      : ["http://localhost:5173", "https://aksagora.netlify.app", "http://192.168.254.15:5173"],
+    origin: [
+      "http://localhost:5173",
+      "http://192.168.254.15:5173",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -40,7 +38,7 @@ app.use(cors({ origin: io.opts.cors.origin, methods: "GET, POST, PUT, DELETE", c
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
-  session({ 
+  session({
     secret: process.env.SESSION_SECRET || "default_secret",
     resave: false,
     saveUninitialized: false,
@@ -52,18 +50,16 @@ app.use(passport.session());
 // ✅ API Routes
 app.use("/api/auth", authRoute);
 app.use("/api/oauth", oauthRoute);
-app.use("/api/ques", quesRoute);
 app.use("/api/friends", friendRoute);
-app.use("/api/chat", messageRoute); 
+app.use("/api/chat", messageRoute);
 app.use("/api/otp", otpRoutes);
-
 
 // ✅ Initialize WebSocket
 initializeSocket(io);
 
 // ✅ Root Route
 app.get("/", (req, res) => {
-  res.status(200).send("Welcome to LearningGo Backend!");
+  res.status(200).send("Welcome to ChatApp Backend!");
 });
 
 // ✅ Error Handling Middleware
