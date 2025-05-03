@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Check, CheckCheck, Clock } from 'lucide-react';
 import ReactionBar from './ReactionBar';
 import { moodThemes } from './theme';
@@ -11,14 +11,14 @@ const ChatMessage = ({
   mood, 
   onClick, 
   clicked,
-  onReaction,
-  socket // Add socket prop to listen to status updates
+  onReaction
 }) => {
+  // State for managing the reaction bar
+  const [showReactionBar, setShowReactionBar] = useState(false);
+  const [selectedReaction, setSelectedReaction] = useState(null); // For storing the selected reaction
+
   // Fallback theme
   const theme = moodThemes[mood] || moodThemes['default'];
-
-  // State to track message status
-  const [messageStatus, setMessageStatus] = useState(message.status);
 
   // Format the timestamp
   const formatTime = (timestamp) => {
@@ -27,17 +27,17 @@ const ChatMessage = ({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Get message status icon
+  // Get message status icon - use message.status directly from props
   const getStatusIcon = () => {
     if (!isOwn) return null;
     
-    switch (messageStatus) {
+    switch (message.status) {
       case 'sending':
         return <Clock size={14} className="text-gray-400" />;
       case 'sent':
         return <Check size={14} className="text-gray-400" />;
       case 'delivered':
-        return <Check size={14} className="text-gray-400" />;
+        return <CheckCheck size={14} className="text-gray-400" />;
       case 'read':
         return <CheckCheck size={14} className="text-blue-500" />;
       case 'error':
@@ -46,23 +46,6 @@ const ChatMessage = ({
         return <Check size={14} className="text-gray-400" />;
     }
   };
-
-  // Listen for status updates via socket
-  useEffect(() => {
-    if (socket) {
-      socket.on('message:statusUpdate', (updatedMessage) => {
-        if (updatedMessage._id === message._id) {
-          setMessageStatus(updatedMessage.status);
-        }
-      });
-    }
-
-    return () => {
-      if (socket) {
-        socket.off('message:statusUpdate');
-      }
-    };
-  }, [socket, message._id]);
 
   // Render the message content based on its type
   const renderMessageContent = () => {
@@ -86,8 +69,8 @@ const ChatMessage = ({
       case 'file':
         return (
           <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-lg">
-            <div className="bg-blue-100 p-2 rounded">
-              <span className="text-blue-500 font-bold">{message.fileType}</span>
+            <div className={`${theme.accent} bg-opacity-20 p-2 rounded`}>
+              <span className={`${theme.accent} text-opacity-100 font-bold`}>{message.fileType}</span>
             </div>
             <div>
               <p className="font-medium">Document</p>
@@ -110,9 +93,9 @@ const ChatMessage = ({
     }, {});
     
     return (
-      <div className="flex mt-1 space-x-1">
+      <div className="flex mt-1 gap-1">
         {Object.entries(reactionCounts).map(([type, count]) => (
-          <div key={type} className="bg-white rounded-full px-2 py-0.5 shadow-sm text-xs flex items-center">
+          <div key={type} className={`bg-white rounded-full px-2 py-0.5 ${theme.shadow} text-xs flex items-center`}>
             <span>{type}</span>
             {count > 1 && <span className="ml-1">{count}</span>}
           </div>
@@ -121,41 +104,62 @@ const ChatMessage = ({
     );
   };
 
+  const handleMessageClick = () => {
+    setShowReactionBar(true);  // Immediately show the reaction bar on click
+    onClick();  // Trigger the parent click handler (for time display)
+  };
+
+  const handleReactionSelect = (reactionType) => {
+    setSelectedReaction(reactionType);  // Store the selected reaction
+    onReaction(reactionType);  // Pass reaction to parent for updating reactions
+    setShowReactionBar(false);  // Hide reaction bar after selecting
+  };
+
   return (
     <div
-      className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-      onClick={onClick}
+      className={`flex ${isOwn ? 'justify-end' : 'justify-start'} mb-3`}
+      onClick={handleMessageClick} // Trigger the onClick event
     >
       <div
-        className={`max-w-xs md:max-w-md px-4 py-2 rounded-xl shadow-sm cursor-pointer transition-all ${
-          isOwn ? theme.ownMessageBg : theme.otherMessageBg
-        }`}
+       className={`
+        relative flex flex-col max-w-xs md:max-w-md px-4 py-2 rounded-xl ${theme.shadow} transition-all
+        ${isOwn ? theme.msgBgOwn : 'bg-white'} 
+        ${isOwn ? theme.msgTextOwn : theme.text}
+        ${isOwn ? 'self-end' : 'self-start'}
+        hover:shadow-lg
+      `}      
       >
         {renderMessageContent()}
-
-        <div className="flex items-center justify-between mt-1 space-x-2 text-xs text-gray-500">
-          <span>{formatTime(message.createdAt)}</span>
+        
+        <div className="flex items-center justify-end mt-1 space-x-1 text-xs opacity-70">
           {getStatusIcon()}
         </div>
 
-        {/* Reactions bar */}
-        {message.reactions && message.reactions.length > 0 && (
-          <div className="mt-1">
-            <ReactionBar
-              reactions={message.reactions}
-              onReact={(reactionType) => onReaction(reactionType)}
-              isOwn={isOwn}
-            />
+        {/* Render reactions */}
+        {renderReactions()}
+
+        {/* Render time only if the message is clicked */}
+        {clicked && (
+          <div className="flex items-center justify-between mt-1 space-x-2 text-xs opacity-70">
+            <span>{formatTime(message.createdAt)}</span>
+          </div>
+        )}
+
+        {/* Render selected reaction emoji in the right bottom corner */}
+        {selectedReaction && (
+          <div className="absolute bottom-0 right-0 -mr-1 -mb-1 flex items-center justify-center h-6 w-6 rounded-full bg-white shadow-md">
+            <span className="text-sm">{selectedReaction}</span>
           </div>
         )}
 
         {/* If this message is clicked, show reaction options */}
-        {clicked && (
-          <div className="mt-2">
+        {clicked && showReactionBar && (
+          <div className="absolute -bottom-10 left-0 right-0 z-10">
             <ReactionBar
-              onReact={(reactionType) => onReaction(reactionType)}
+              onReact={handleReactionSelect}
               showAllOptions
               isOwn={isOwn}
+              theme={theme}
             />
           </div>
         )}

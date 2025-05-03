@@ -32,6 +32,7 @@ const ChatApp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFriendOnline, setIsFriendOnline] = useState(false);
   const messagesEndRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
   const BASE = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
@@ -41,35 +42,47 @@ const ChatApp = () => {
   useEffect(() => {
     socket.connect();
     socket.emit('join', userId);
-  
+
     socket.on('onlineUsers', (onlineUserIds) => {
       setIsFriendOnline(onlineUserIds.includes(receiverId));
     });
-  
+
     socket.on('userOnline', (onlineUserId) => {
       if (onlineUserId === receiverId) {
         setIsFriendOnline(true);
       }
     });
-  
+
     socket.on('userOffline', (offlineUserId) => {
       if (offlineUserId === receiverId) {
         setIsFriendOnline(false);
       }
     });
-  
+
+    socket.on('messageDelivered', ({ messageId, tempId }) => {
+      setMessages(prev =>
+        prev.map(msg =>
+          msg._id === tempId ? { ...msg, _id: messageId, status: 'delivered' } : msg
+        )
+      );
+    });
+      
+
     socket.on('messageReceived', (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
-  
+
     socket.on('typing', ({ senderId }) => {
       if (senderId === receiverId) {
         setIsTyping(true);
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 3000);
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsTyping(false);
+        }, 3000);
       }
     });
-  
+
+
     socket.on('messagesSeen', ({ by }) => {
       setMessages((prev) =>
         prev.map((msg) =>
@@ -77,20 +90,47 @@ const ChatApp = () => {
         )
       );
     });
-  
-    // Add the message:statusUpdate event listener here
-    socket.on('message:statusUpdate', (updatedMessage) => {
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) =>
-          msg._id === updatedMessage._id
-            ? { ...msg, status: updatedMessage.status }
+
+    socket.on('messageReaction', ({ messageId, type, userId }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId
+            ? {
+              ...msg,
+              reactions: msg.reactions?.some((r) => r.userId === userId)
+                ? msg.reactions.map((r) =>
+                  r.userId === userId ? { ...r, type } : r
+                )
+                : [...(msg.reactions || []), { userId, type }],
+            }
             : msg
         )
       );
     });
-  
+
+
+    // Add the message:statusUpdate event listener here
+    socket.on('message:statusUpdate', (updatedMessage) => {
+      console.log('Received message status update:', updatedMessage);
+      
+      // Ensure the ID is a string for consistent comparison
+      const messageId = updatedMessage._id.toString();
+      
+      setMessages((prevMessages) => {
+        return prevMessages.map((msg) => {
+          // Ensure consistent ID comparison by converting both to strings
+          const msgId = msg._id.toString();
+          
+          if (msgId === messageId) {
+            console.log(`Updating message ${msgId} status to ${updatedMessage.status}`);
+            return { ...msg, status: updatedMessage.status };
+          }
+          return msg;
+        });
+      });
+    });
     loadConversation();
-  
+
     return () => {
       socket.off('onlineUsers');
       socket.off('userOnline');
@@ -98,18 +138,20 @@ const ChatApp = () => {
       socket.off('messageReceived');
       socket.off('typing');
       socket.off('messagesSeen');
-      socket.off('message:statusUpdate');  // Cleanup on unmount
+      socket.off('messageDelivered');
+      socket.off('messageReaction');
+      socket.off('message:statusUpdate');
       socket.disconnect();
     };
   }, [userId, receiverId]);
-  
+
 
   useEffect(() => {
-    const lastMsg = messages[messages.length - 1];
-    if (lastMsg && lastMsg.senderId === receiverId) {
+    if (messages.some(msg => msg.senderId === receiverId && msg.status !== 'read')) {
       socket.emit('markAsSeen', { userId, contactId: receiverId });
     }
-  }, [messages]);
+  }, [messages, receiverId]);
+  
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -127,18 +169,12 @@ const ChatApp = () => {
     }
   };
 
-  const typingTimeoutRef = useRef(null);
 
 
   const handleTyping = () => {
     socket.emit('typing', { senderId: userId, receiverId });
-
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false); // Stop showing typing after delay
-    }, 3000); // 3 seconds
   };
+
 
   const onKeyPress = (e) => handleKeyPress(e, handleSendMessage);
   const tempId = Date.now().toString();
@@ -163,7 +199,7 @@ const ChatApp = () => {
       }
 
       socket.emit('sendMessage', payload);
-      
+
       setMessages((prev) => [
         ...prev,
         {
@@ -184,6 +220,11 @@ const ChatApp = () => {
   const handleReaction = async (messageId, reactionType) => {
     try {
       await axios.post(`${BASE}/chat/message/${messageId}/react`, { userId, type: reactionType });
+
+      // Emit socket event to notify others
+      socket.emit('reactMessage', { messageId, type: reactionType, userId });
+
+      // Update local state for sender
       setMessages((prev) =>
         prev.map((msg) =>
           msg._id === messageId
@@ -203,9 +244,10 @@ const ChatApp = () => {
     }
   };
 
+
   const toggleRecording = () => setIsRecording(!isRecording);
 
-  return (
+  return (<>
     <div className={`flex flex-col h-screen ${currentTheme.bg} ${currentTheme.text}`}>
       <ChatHeader
         friendUsername={friendUsername}
@@ -216,7 +258,7 @@ const ChatApp = () => {
       />
 
       <TypingIndicator isTyping={isTyping} />
-      <div className="flex-1 p-4 overflow-y-auto space-y-3">
+      <div className="flex-1 mt-5 h-screen overflow-y-auto space-y-3">
         <MessageList
           messages={messages}
           isLoading={isLoading}
@@ -262,6 +304,7 @@ const ChatApp = () => {
         toggleRecording={toggleRecording}
       />
     </div>
+    </>
   );
 };
 

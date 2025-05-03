@@ -31,7 +31,7 @@ export default function App() {
         <Sidebar />
 
         {/* ✅ Main Content Wrapper */}
-        <div className="flex-1 overflow-y-auto bg-gray-950 mx-5">
+        <div className="flex-1 overflow-y-auto bg-gray-950">
         <MoodProvider >
           <Routes>
             <Route path="/" element={<HomePage />} />

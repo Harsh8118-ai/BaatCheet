@@ -16,7 +16,7 @@ const MessageInput = ({
   isRecording,
   toggleRecording,
 }) => (
-  <div className="p-4 bg-white border-t border-gray-200">
+  <div className="fixed p-4 bg-white border-t border-gray-200 bottom-0">
     <div className="flex items-center space-x-2">
       <button className="text-gray-500 hover:text-gray-700">
         <MessageSquare size={20} />

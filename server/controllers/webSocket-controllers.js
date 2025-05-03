@@ -16,7 +16,7 @@ const initializeSocket = (io) => {
       const allOnline = Array.from(onlineUsers.keys());
       socket.emit("onlineUsers", allOnline);
 
-      console.log(`📌 User ${userId} joined their room`);
+      console.log(`📌 User ${userId} joined room: ${userId}`);
     });
 
     // ✅ Typing
@@ -26,36 +26,77 @@ const initializeSocket = (io) => {
 
     // ✅ Sending Message
     socket.on("sendMessage", async (data) => {
-      const { senderId, receiverId } = data;
+      const { senderId, receiverId, tempId } = data;
       const conversationId = [senderId, receiverId].sort().join("_");
       data.conversationId = conversationId;
 
-      // Save message with initial "sent" status
       const message = new Message({ ...data, status: "sent" });
       await message.save();
 
-      // Emit to receiver → mark as "delivered"
       io.to(receiverId).emit("messageReceived", { ...message.toObject(), status: "delivered" });
+      io.to(senderId).emit("messageDelivered", { messageId: message._id, tempId });
 
-      // Emit to sender to update UI
-      io.to(senderId).emit("messageDelivered", { messageId: message._id });
-
-      // Update message status to "delivered" in DB
       await Message.findByIdAndUpdate(message._id, { status: "delivered" });
 
       console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId}`);
     });
 
-    // ✅ Seen Status
-    socket.on("markAsSeen", async ({ userId, contactId }) => {
-      // Update messages from contact to user
+    // ✅ Seen Status - FIXED
+    // ✅ Seen Status - COMPLETE FIX
+socket.on("markAsSeen", async ({ userId, contactId }) => {
+  try {
+    // Find all unread messages from the contact to the user
+    const updatedMessages = await Message.find({
+      senderId: contactId,
+      receiverId: userId,
+      status: { $ne: "read" }
+    });
+
+    if (updatedMessages.length > 0) {
+      console.log(`Found ${updatedMessages.length} messages to mark as read`);
+      
+      // Extract the message IDs that need to be updated
+      const messageIds = updatedMessages.map(msg => msg._id);
+      
+      // Update those messages' status to 'read' in the database
       await Message.updateMany(
-        { senderId: contactId, receiverId: userId, status: { $ne: "read" } },
+        { _id: { $in: messageIds } }, 
         { status: "read" }
       );
-
+      
+      // Get the complete updated messages after the update
+      const freshMessages = await Message.find({ _id: { $in: messageIds } });
+      
+      // Emit updates for each message
+      freshMessages.forEach(message => {
+        const messageObj = message.toObject();
+        
+        // For debugging
+        console.log(`Emitting status update for message: ${message._id}, new status: read`);
+        
+        // Convert ObjectId to string to ensure consistent comparison in frontend
+        messageObj._id = messageObj._id.toString();
+        
+        // Emit to both sender and receiver
+        io.to(contactId).emit("message:statusUpdate", messageObj);
+        io.to(userId).emit("message:statusUpdate", messageObj);
+      });
+      
+      // Also emit a messagesSeen event as a backup approach
       io.to(contactId).emit("messagesSeen", { by: userId });
-      console.log(`👁️ Messages from ${contactId} seen by ${userId}`);
+      
+      console.log(`👁️ ${messageIds.length} messages from ${contactId} seen by ${userId}`);
+    }
+  } catch (error) {
+    console.error("Error marking messages as seen:", error);
+  }
+});
+
+
+    // ✅ Reactions
+    socket.on("reactMessage", ({ messageId, type, userId }) => {
+      io.emit("messageReaction", { messageId, type, userId });
+      console.log(`💬 Reaction on message ${messageId} by ${userId}: ${type}`);
     });
 
     // ✅ Handle Disconnect
