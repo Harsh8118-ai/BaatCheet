@@ -1,5 +1,6 @@
 // components/ChatHeader.jsx
-import { Moon, Image, ArrowLeft } from 'lucide-react';
+import { Moon, ArrowLeft } from 'lucide-react';
+
 
 const ChatHeader = ({
   friendUsername,
@@ -7,21 +8,20 @@ const ChatHeader = ({
   showMoodPicker,
   isFriendOnline,
   isTyping,
-  onBack, 
+  onBack,
 }) => {
   return (
     <div className="fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-4 py-3 bg-white shadow-md border-b border-gray-200">
       {/* Left Section: Back button (for mobile), Avatar, and Username */}
       <div className="flex items-center space-x-3 min-w-0">
         {/* Back Button on small screens */}
-        {onBack && (
-          <button
-            onClick={onBack}
-            className="text-gray-600 hover:text-black md:hidden"
-          >
-            <ArrowLeft size={22} />
-          </button>
-        )}
+        <button
+          onClick={onBack || (() => console.log('No onBack handler'))}
+          className="text-gray-600 hover:text-black"
+        >
+          <ArrowLeft size={20} />
+        </button>
+
 
         {/* Avatar with online indicator */}
         <div className="relative flex-shrink-0">
@@ -29,9 +29,8 @@ const ChatHeader = ({
             {friendUsername?.charAt(0) || 'C'}
           </div>
           <div
-            className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
-              isFriendOnline ? 'bg-green-400' : 'bg-gray-400'
-            }`}
+            className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${isFriendOnline ? 'bg-green-400' : 'bg-gray-400'
+              }`}
           />
         </div>
 
@@ -54,9 +53,6 @@ const ChatHeader = ({
           title="Mood Picker"
         >
           <Moon size={20} />
-        </button>
-        <button className="text-gray-500 hover:text-gray-700" title="Media">
-          <Image size={20} />
         </button>
       </div>
     </div>

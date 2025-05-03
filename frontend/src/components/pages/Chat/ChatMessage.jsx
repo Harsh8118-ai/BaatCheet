@@ -122,7 +122,7 @@ const ChatMessage = ({
     >
       <div
        className={`
-        relative flex flex-col max-w-xs md:max-w-md px-4 py-2 rounded-xl ${theme.shadow} transition-all
+        relative flex justify-end max-w-xs md:max-w-md px-4 py-2 mx-1 rounded-xl ${theme.shadow} transition-all
         ${isOwn ? theme.msgBgOwn : 'bg-white'} 
         ${isOwn ? theme.msgTextOwn : theme.text}
         ${isOwn ? 'self-end' : 'self-start'}
@@ -131,26 +131,26 @@ const ChatMessage = ({
       >
         {renderMessageContent()}
         
-        <div className="flex items-center justify-end mt-1 space-x-1 text-xs opacity-70">
           {getStatusIcon()}
-        </div>
+        {/* <div className="flex items-center justify-end mt-1 space-x-1 text-xs opacity-70">
+        </div> */}
 
         {/* Render reactions */}
-        {renderReactions()}
+        
 
         {/* Render time only if the message is clicked */}
         {clicked && (
           <div className="flex items-center justify-between mt-1 space-x-2 text-xs opacity-70">
-            <span>{formatTime(message.createdAt)}</span>
+            <span>{formatTime(message.createdAt)}{renderReactions()}</span>
           </div>
         )}
 
         {/* Render selected reaction emoji in the right bottom corner */}
-        {selectedReaction && (
+        {/* {selectedReaction && (
           <div className="absolute bottom-0 right-0 -mr-1 -mb-1 flex items-center justify-center h-6 w-6 rounded-full bg-white shadow-md">
             <span className="text-sm">{selectedReaction}</span>
           </div>
-        )}
+        )} */}
 
         {/* If this message is clicked, show reaction options */}
         {clicked && showReactionBar && (

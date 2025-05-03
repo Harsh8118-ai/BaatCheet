@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import "aos/dist/aos.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Sidebar } from "./components/pages/Sidebar";
-import Bookmarked from "./components/pages/Bookmarked";
 import Settings from "./components/pages/Settings";
 import Signup from "./components/pages/Signup";
 import Login from "./components/pages/Login";
@@ -27,9 +25,7 @@ export default function App() {
 
     <div className="bg-gray-950">
       <div className="flex h-screen min-h-screen">
-        {/* ✅ Sidebar with scroll support */}
-        <Sidebar />
-
+      
         {/* ✅ Main Content Wrapper */}
         <div className="flex-1 overflow-y-auto bg-gray-950">
         <MoodProvider >
@@ -41,7 +37,6 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/auth-success" element={<AuthSuccess />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/friend-requests" element={<FriendRequests />} />
             <Route path="/chat/:friendId" element={<ChatPage />} />

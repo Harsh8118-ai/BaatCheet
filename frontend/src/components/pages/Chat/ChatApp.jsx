@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import socket from './socket';
 import axios from 'axios';
 import { useMood } from './MoodContext';
@@ -19,6 +19,7 @@ const ChatApp = () => {
   const receiverId = window.location.pathname.split('/chat/')[1];
   const userId = localStorage.getItem('userId');
   const { mood, setMood } = useMood();
+  const navigate = useNavigate();
   const currentTheme = moodThemes[mood] || moodThemes['professional'];
 
   const [messages, setMessages] = useState([]);
@@ -255,6 +256,7 @@ const ChatApp = () => {
         showMoodPicker={showMoodPicker}
         isFriendOnline={isFriendOnline}
         isTyping={isTyping}
+        onBack={() => navigate(-1)}
       />
 
       <TypingIndicator isTyping={isTyping} />

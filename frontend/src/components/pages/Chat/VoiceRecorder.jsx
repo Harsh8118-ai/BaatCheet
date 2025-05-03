@@ -9,9 +9,25 @@ const VoiceRecorder = ({ isRecording, onToggleRecording, onRecordingComplete }) 
 
   useEffect(() => {
     if (isRecording) {
+      // Only allow on secure origin or localhost
+      const isSecure = window.isSecureContext || window.location.hostname === 'localhost';
+      if (!isSecure) {
+        alert('Voice recording only works on HTTPS or localhost.');
+        onToggleRecording();
+        return;
+      }
+
+      // Check for MediaRecorder support
+      if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+        alert('Voice recording is not supported on this device or browser.');
+        onToggleRecording();
+        return;
+      }
+
       startRecording();
+
       timerRef.current = setInterval(() => {
-        setElapsedTime(prev => prev + 1);
+        setElapsedTime((prev) => prev + 1);
       }, 1000);
     } else {
       stopRecording();
@@ -20,10 +36,8 @@ const VoiceRecorder = ({ isRecording, onToggleRecording, onRecordingComplete }) 
     }
 
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      clearInterval(timerRef.current);
+      if (mediaRecorderRef.current?.state === 'recording') {
         mediaRecorderRef.current.stop();
       }
     };
@@ -31,42 +45,48 @@ const VoiceRecorder = ({ isRecording, onToggleRecording, onRecordingComplete }) 
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    const remaining = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remaining.toString().padStart(2, '0')}`;
   };
 
   const startRecording = async () => {
     try {
+      const permissionStatus = await navigator.permissions?.query({ name: 'microphone' });
+      if (permissionStatus && permissionStatus.state === 'denied') {
+        alert('Microphone access denied. Please enable it in your browser settings.');
+        onToggleRecording();
+        return;
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunksRef.current = [];
-      
+
       mediaRecorderRef.current = new MediaRecorder(stream);
-      
+
       mediaRecorderRef.current.ondataavailable = (e) => {
         if (e.data.size > 0) {
           audioChunksRef.current.push(e.data);
         }
       };
-      
+
       mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         if (onRecordingComplete) {
           onRecordingComplete(audioBlob);
         }
-        
-        // Stop all tracks in the stream to release the microphone
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       };
-      
+
       mediaRecorderRef.current.start();
-    } catch (error) {
-      console.error('Error starting recording:', error);
-      onToggleRecording(); // Turn off recording if there's an error
+    } catch (err) {
+      console.error('Recording error:', err);
+      alert('Failed to start voice recording. Please check microphone permission.');
+      onToggleRecording();
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+    if (mediaRecorderRef.current?.state === 'recording') {
       mediaRecorderRef.current.stop();
     }
   };
