@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { Check, CheckCheck, Clock } from 'lucide-react';
 import ReactionBar from './ReactionBar';
 import { moodThemes } from './theme';
+import VoiceMessagePlayer from './VoiceMessagePlayer';
 
-const ChatMessage = ({ 
-  message, 
-  isOwn, 
-  currentUser, 
-  selectedContact, 
-  mood, 
-  onClick, 
+const ChatMessage = ({
+  message,
+  isOwn,
+  currentUser,
+  selectedContact,
+  mood,
+  onClick,
   clicked,
   onReaction
 }) => {
@@ -30,7 +31,7 @@ const ChatMessage = ({
   // Get message status icon - use message.status directly from props
   const getStatusIcon = () => {
     if (!isOwn) return null;
-    
+
     switch (message.status) {
       case 'sending':
         return <Clock size={14} className="text-gray-400" />;
@@ -52,19 +53,16 @@ const ChatMessage = ({
     switch (message.messageType) {
       case 'image':
         return (
-          <img 
-            src={message.fileUrl} 
-            alt="Image" 
-            className="max-w-xs rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+          <img
+            src={message.fileUrl}
+            alt="Image"
+            className="w-full max-w-md sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
           />
+
         );
       case 'voice':
         return (
-          <audio 
-            controls 
-            src={message.audioUrl} 
-            className="max-w-full"
-          />
+          <VoiceMessagePlayer src={message.fileUrl || message.audioUrl} createdAt={message.createdAt} />
         );
       case 'file':
         return (
@@ -86,12 +84,12 @@ const ChatMessage = ({
   // Render reaction counts if any
   const renderReactions = () => {
     if (!message.reactions || message.reactions.length === 0) return null;
-    
+
     const reactionCounts = message.reactions.reduce((acc, reaction) => {
       acc[reaction.type] = (acc[reaction.type] || 0) + 1;
       return acc;
     }, {});
-    
+
     return (
       <div className="flex mt-1 gap-1">
         {Object.entries(reactionCounts).map(([type, count]) => (
@@ -117,33 +115,26 @@ const ChatMessage = ({
 
   return (
     <div
-      className={`flex ${isOwn ? 'justify-end' : 'justify-start'} mb-3`}
+      className={`flex flex-col items-${isOwn ? 'end' : 'start'}  mb-3`}
       onClick={handleMessageClick} // Trigger the onClick event
     >
       <div
-       className={`
-        relative flex justify-end max-w-xs md:max-w-md px-4 py-2 mx-1 rounded-xl ${theme.shadow} transition-all
-        ${isOwn ? theme.msgBgOwn : 'bg-white'} 
+        className={`
+        relative flex flex-col justify-end max-w-xs md:max-w-md px-4 py-2 mx-1 rounded-xl ${theme.shadow} transition-all
+        ${isOwn ? theme.msgBgOwn : 'bg-gray-600'} 
         ${isOwn ? theme.msgTextOwn : theme.text}
         ${isOwn ? 'self-end' : 'self-start'}
         hover:shadow-lg
-      `}      
+      `}
       >
         {renderMessageContent()}
-        
-          {getStatusIcon()}
-        {/* <div className="flex items-center justify-end mt-1 space-x-1 text-xs opacity-70">
-        </div> */}
 
-        {/* Render reactions */}
         
+        {renderReactions()}
+
 
         {/* Render time only if the message is clicked */}
-        {clicked && (
-          <div className="flex items-center justify-between mt-1 space-x-2 text-xs opacity-70">
-            <span>{formatTime(message.createdAt)}{renderReactions()}</span>
-          </div>
-        )}
+        
 
         {/* Render selected reaction emoji in the right bottom corner */}
         {/* {selectedReaction && (
@@ -154,9 +145,10 @@ const ChatMessage = ({
 
         {/* If this message is clicked, show reaction options */}
         {clicked && showReactionBar && (
-          <div className="absolute -bottom-10 left-0 right-0 z-10">
+          <div className={`absolute -top-10  ${isOwn ? 'right-0' : 'left-0'} z-10`}>
             <ReactionBar
               onReact={handleReactionSelect}
+              currentUserReaction={message.reactions?.find(r => r.userId === currentUser._id)?.type || null}
               showAllOptions
               isOwn={isOwn}
               theme={theme}
@@ -164,6 +156,11 @@ const ChatMessage = ({
           </div>
         )}
       </div>
+      {clicked && (
+          <div className="flex mt-1 space-x-2 text-xs opacity-70">
+            <span>{getStatusIcon()} &nbsp;</span> <span>{formatTime(message.createdAt)}  </span>
+          </div>
+        )}
     </div>
   );
 };

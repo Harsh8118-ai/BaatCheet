@@ -6,9 +6,14 @@ const {
   markMessagesAsRead,
 } = require("../controllers/chat-controllers");
 const Message = require("../models/chat-model");
+const upload = require("../middlewares/upload");
+const { sendFileMessage } = require("../controllers/file-message-controllers");
 
 // 📩 Send Message & Save in DB
 router.post("/send", sendMessage);
+
+// New route for uploading any type of file message (image, voice, video, doc)
+router.post("/send-file", upload.single("file"), sendFileMessage);
 
 // 📜 Get Messages Between Two Users
 router.get("/conversation/:user1/:user2", getConversation);

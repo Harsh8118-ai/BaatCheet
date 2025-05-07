@@ -34,7 +34,7 @@ const AuthSuccess = () => {
             setModalOpen(true);
             console.log("🔹 Opening Modal");
           } else {
-            navigate("/profile");
+            navigate("/");
           }
         }, 500);
       } catch (error) {

@@ -35,6 +35,9 @@ const ChatApp = () => {
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const BASE = import.meta.env.VITE_BACKEND_URL;
+  const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
+
 
   useEffect(() => {
     scrollToBottom();
@@ -67,7 +70,7 @@ const ChatApp = () => {
         )
       );
     });
-      
+
 
     socket.on('messageReceived', (msg) => {
       setMessages((prev) => [...prev, msg]);
@@ -113,15 +116,15 @@ const ChatApp = () => {
     // Add the message:statusUpdate event listener here
     socket.on('message:statusUpdate', (updatedMessage) => {
       console.log('Received message status update:', updatedMessage);
-      
+
       // Ensure the ID is a string for consistent comparison
       const messageId = updatedMessage._id.toString();
-      
+
       setMessages((prevMessages) => {
         return prevMessages.map((msg) => {
           // Ensure consistent ID comparison by converting both to strings
           const msgId = msg._id.toString();
-          
+
           if (msgId === messageId) {
             console.log(`Updating message ${msgId} status to ${updatedMessage.status}`);
             return { ...msg, status: updatedMessage.status };
@@ -152,7 +155,7 @@ const ChatApp = () => {
       socket.emit('markAsSeen', { userId, contactId: receiverId });
     }
   }, [messages, receiverId]);
-  
+
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -178,29 +181,56 @@ const ChatApp = () => {
 
 
   const onKeyPress = (e) => handleKeyPress(e, handleSendMessage);
-  const tempId = Date.now().toString();
+  
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() && !file && !isRecording) return;
+
+    const tempId = Date.now().toString();
+    let fileUrl = null;
+    let messageType = 'text';
+    let fileType = null;
+
     try {
+      // 1. Upload file to Cloudinary if exists
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', PRESET);
+
+        const uploadRes = await axios.post(
+          `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
+          formData
+        );
+
+
+        fileUrl = uploadRes.data.secure_url;
+        const ext = file.name.split('.').pop().toLowerCase();
+        
+
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) messageType = 'image';
+        else if (['mp3', 'wav', 'ogg'].includes(ext)) messageType = 'voice';
+        else {
+          messageType = 'file';
+          fileType = ext;
+        }
+      }
+
+      // 2. Prepare message payloadx`
       const payload = {
         senderId: userId,
         receiverId,
-        message: inputValue,
-        messageType: 'text',
         tempId,
+        message: inputValue || '', // Text still included
+        messageType,
+        fileUrl,
+        fileType,
       };
-      if (file) {
-        const ext = file.name.split('.').pop();
-        payload.fileUrl = URL.createObjectURL(file);
-        payload.messageType =
-          ['jpg', 'jpeg', 'png', 'gif'].includes(ext) ? 'image' :
-            ['mp3', 'wav', 'ogg'].includes(ext) ? 'voice' : 'file';
-        if (payload.messageType === 'file') payload.fileType = ext;
-      }
 
+      // 3. Emit message via socket
       socket.emit('sendMessage', payload);
 
+      // 4. Optimistic UI update
       setMessages((prev) => [
         ...prev,
         {
@@ -211,12 +241,16 @@ const ChatApp = () => {
           reactions: [],
         },
       ]);
+
+      // Clear input field and file state
       setInputValue('');
       setFile(null);
     } catch (err) {
       console.error('Error sending message:', err);
     }
   };
+
+
 
   const handleReaction = async (messageId, reactionType) => {
     try {
@@ -250,17 +284,21 @@ const ChatApp = () => {
 
   return (<>
     <div className={`flex flex-col h-screen ${currentTheme.bg} ${currentTheme.text}`}>
-      <ChatHeader
-        friendUsername={friendUsername}
-        setShowMoodPicker={setShowMoodPicker}
-        showMoodPicker={showMoodPicker}
-        isFriendOnline={isFriendOnline}
-        isTyping={isTyping}
-        onBack={() => navigate(-1)}
-      />
-
-      <TypingIndicator isTyping={isTyping} />
-      <div className="flex-1 mt-5 h-screen overflow-y-auto space-y-3">
+      {/* Fixed header at the top */}
+      <div className="sticky top-0 z-10">
+        <ChatHeader
+          friendUsername={friendUsername}
+          setShowMoodPicker={setShowMoodPicker}
+          showMoodPicker={showMoodPicker}
+          isFriendOnline={isFriendOnline}
+          isTyping={isTyping}
+          onBack={() => navigate(-1)}
+        />
+        <TypingIndicator isTyping={isTyping} />
+      </div>
+      
+      {/* Message list with proper padding */}
+      <div className="flex-1 overflow-y-auto px-4 mt-16 py-2 space-y-3 pb-20">
         <MessageList
           messages={messages}
           isLoading={isLoading}
@@ -273,40 +311,44 @@ const ChatApp = () => {
           messagesEndRef={messagesEndRef}
         />
       </div>
-      {showMoodPicker && (
-        <MoodPicker
-          currentMood={mood}
-          onSelect={(m) => {
-            setMood(m);
-            setShowMoodPicker(false);
-          }}
-          onClose={() => setShowMoodPicker(false)}
+      
+      {/* Fixed input at the bottom */}
+      <div className="sticky bottom-0 z-10">
+        {showMoodPicker && (
+          <MoodPicker
+            currentMood={mood}
+            onSelect={(m) => {
+              setMood(m);
+              setShowMoodPicker(false);
+            }}
+            onClose={() => setShowMoodPicker(false)}
+          />
+        )}
+        {showEmojiPicker && (
+          <EmojiPicker
+            onSelect={(emoji) => {
+              setInputValue((prev) => prev + emoji);
+              setShowEmojiPicker(false);
+            }}
+            onClose={() => setShowEmojiPicker(false)}
+          />
+        )}
+        <MessageInput
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          handleKeyPress={onKeyPress}
+          handleTyping={handleTyping}
+          showEmojiPicker={showEmojiPicker}
+          setShowEmojiPicker={setShowEmojiPicker}
+          file={file}
+          setFile={setFile}
+          handleSendMessage={handleSendMessage}
+          isRecording={isRecording}
+          toggleRecording={toggleRecording}
         />
-      )}
-      {showEmojiPicker && (
-        <EmojiPicker
-          onSelect={(emoji) => {
-            setInputValue((prev) => prev + emoji);
-            setShowEmojiPicker(false);
-          }}
-          onClose={() => setShowEmojiPicker(false)}
-        />
-      )}
-      <MessageInput
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        handleKeyPress={onKeyPress}
-        handleTyping={handleTyping}
-        showEmojiPicker={showEmojiPicker}
-        setShowEmojiPicker={setShowEmojiPicker}
-        file={file}
-        setFile={setFile}
-        handleSendMessage={handleSendMessage}
-        isRecording={isRecording}
-        toggleRecording={toggleRecording}
-      />
+      </div>
     </div>
-    </>
+  </>
   );
 };
 

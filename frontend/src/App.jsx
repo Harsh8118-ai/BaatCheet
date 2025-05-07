@@ -1,17 +1,16 @@
 import React, { useEffect } from "react";
 import "aos/dist/aos.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Settings from "./components/pages/Settings";
 import Signup from "./components/pages/Signup";
 import Login from "./components/pages/Login";
 import Profile from "./components/pages/Profile";
 import HomePage from "./HomePage";
-import AuthSuccess from "./components/store/AuthSuccess";
 import Friends from "./components/pages/Friends-User/Friends";
 import FriendRequests from "./components/pages/Friends-User/FriendRequests";
 import ChatPage from "./components/pages/Chat/ChatPage";
 import { useAuth } from "./components/store/UseAuth";
 import { MoodProvider } from "./components/pages/Chat/MoodContext";
+import AuthSuccess from "./components/store/AuthSuccess";
 
 export default function App() {
   const { user } = useAuth();
@@ -31,12 +30,10 @@ export default function App() {
         <MoodProvider >
           <Routes>
             <Route path="/" element={<HomePage />} />
-            
-            
-            <Route path="/settings" element={<Settings />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/auth-success" element={<AuthSuccess />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/friend-requests" element={<FriendRequests />} />
             <Route path="/chat/:friendId" element={<ChatPage />} />

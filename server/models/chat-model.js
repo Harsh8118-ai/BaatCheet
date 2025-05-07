@@ -22,9 +22,9 @@ const messageSchema = new mongoose.Schema(
       default: "text",
     },
 
-    fileUrl: { type: String },       // For file/image
-    fileType: { type: String },      // e.g., "pdf", "jpg", "mp4"
-    audioUrl: { type: String },      // For voice message
+    fileUrl: { type: String },       
+    fileType: { type: String },      
+    audioUrl: { type: String },      
 
     status: {
       type: String,

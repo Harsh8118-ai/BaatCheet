@@ -25,7 +25,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "http://192.168.254.15:5173",
+      "http://192.168.66.15:5173",
     ],
     methods: ["GET", "POST"],
     credentials: true,
