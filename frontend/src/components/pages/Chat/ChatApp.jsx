@@ -20,7 +20,7 @@ const ChatApp = () => {
   const userId = localStorage.getItem('userId');
   const { mood, setMood } = useMood();
   const navigate = useNavigate();
-  const currentTheme = moodThemes[mood] || moodThemes['professional'];
+  const currentTheme = moodThemes[mood]
 
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -43,8 +43,8 @@ const ChatApp = () => {
     scrollToBottom();
   }, [messages]);
 
-   // Load the conversation when the component mounts
-   useEffect(() => {
+  // Load the conversation when the component mounts
+  useEffect(() => {
     const loadConversation = async () => {
       try {
         setIsLoading(true);
@@ -58,7 +58,37 @@ const ChatApp = () => {
     };
 
     loadConversation(); // This will run on initial render or when receiverId changes
-  }, [receiverId, userId]); // This ensures it runs whenever the receiverId or userId changes
+  }, [receiverId, userId]);
+
+  //Load the currentMood 
+  useEffect(() => {
+    const fetchCurrentMood = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Get the token from localStorage
+
+        const res = await axios.get(`${BASE}/auth/user`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the header
+          },
+        });
+
+        // Access the user's current mood from the response data
+        const liveMood = res.data?.user?.currentMood;
+
+
+        if (liveMood) {
+          setMood(liveMood); // Update the mood context with the live mood
+        }
+      } catch (error) {
+        console.error("Error fetching mood:", error);
+      }
+    };
+
+    fetchCurrentMood(); // Fetch current mood when the component mounts or mood picker is shown
+  }, [showMoodPicker]); 
+
+
+
 
   // Use custom hook for socket events
   useChatSocket({
@@ -68,7 +98,7 @@ const ChatApp = () => {
     setIsTyping,
     setIsFriendOnline,
   });
-  
+
 
 
   useEffect(() => {
@@ -190,6 +220,8 @@ const ChatApp = () => {
 
 
   const toggleRecording = () => setIsRecording(!isRecording);
+  // console.log(currentTheme.bg);
+
 
   return (<>
     <div className={`flex flex-col h-screen ${currentTheme.bg} ${currentTheme.text}`}>
@@ -207,7 +239,7 @@ const ChatApp = () => {
       </div>
 
       {/* Message list with proper padding */}
-      <div className="flex-1 overflow-y-auto px-4 mt-16 py-2 space-y-3 pb-20">
+      <div className={`flex-1 overflow-y-auto px-4 mt-16 py-2 space-y-3 pb-20 ${currentTheme.bg} ${currentTheme.text}`}>
         <MessageList
           messages={messages}
           isLoading={isLoading}
