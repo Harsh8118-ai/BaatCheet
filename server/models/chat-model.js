@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const reactionSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    type: { type: String }, // e.g., "❤️", "😂", "👍"
+    type: { type: String }, 
   },
   { _id: false }
 );
@@ -14,7 +14,7 @@ const messageSchema = new mongoose.Schema(
     senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     receiverId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
-    message: { type: String }, // Text or emoji message
+    message: { type: String }, 
 
     messageType: {
       type: String,
@@ -33,6 +33,13 @@ const messageSchema = new mongoose.Schema(
     },
 
     reactions: [reactionSchema],
+
+    mood: {
+      type: String,
+      enum: ["default", "happy", "calm", "romantic", "dark", "energetic", "professional"],
+      default: "default",
+    },
+
   },
   { timestamps: true }
 );

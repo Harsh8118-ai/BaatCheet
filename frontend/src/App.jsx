@@ -25,7 +25,7 @@ export default function App() {
     <div className="bg-gray-950">
       <div className="flex h-screen min-h-screen">
       
-        {/* ✅ Main Content Wrapper */}
+        {/* Main Content Wrapper */}
         <div className="flex-1 overflow-y-auto bg-gray-950">
         <MoodProvider >
           <Routes>

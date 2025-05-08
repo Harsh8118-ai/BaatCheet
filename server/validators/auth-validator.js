@@ -14,7 +14,7 @@ const loginSchema = z.object({
         .min(8, { message: "Password must be at least 8 characters." })
         .max(1024, { message: "Password must not be more than 1024 characters." }),
 
-        authProvider: z.enum(["manual", "google", "github"]), // ✅ Allows OAuth login
+        authProvider: z.enum(["manual", "google", "github"]), // Allows OAuth login
         
 });
 

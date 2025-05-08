@@ -36,7 +36,7 @@ router.post("/generate-invite-code", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Search User by Invite Code
+// Search User by Invite Code
 router.get("/search-by-invite", async (req, res) => {
   try {
     const { code } = req.query;
@@ -65,7 +65,7 @@ router.get("/search-by-invite", async (req, res) => {
 module.exports = router;
 
 
-// ✅ Get Stored Invite Code
+// Get Stored Invite Code
 router.get("/invite-code", authMiddleware, async (req, res) => {
   try {
     const friendData = await Friend.findOne({ userId: req.user.id });
@@ -80,25 +80,25 @@ router.get("/invite-code", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Send a friend request using an invite code
+// Send a friend request using an invite code
 router.post("/send-request", authMiddleware, sendFriendRequest);
 
-// ✅ Accept or reject a friend request
+// Accept or reject a friend request
 router.post("/respond-request", authMiddleware, respondToFriendRequest);
 
-// ✅ Get a list of friends
+// Get a list of friends
 router.get("/friends-list", authMiddleware, getFriendsList);
 
-// ✅ Get sent friend requests
+// Get sent friend requests
 router.get("/requests/sent", authMiddleware, getSentRequests);
 
-// ✅ Get received friend requests
+// Get received friend requests
 router.get("/requests/received", authMiddleware, getReceivedRequests);
 
-// ✅ Withdraw Sent Friend Request
+// Withdraw Sent Friend Request
 router.post("/withdraw-request", authMiddleware, withdrawFriendRequest);
 
-// ✅ Remove a friend
+// Remove a friend
 router.post("/remove-friend", authMiddleware, removeFriend);
 
 module.exports = router;

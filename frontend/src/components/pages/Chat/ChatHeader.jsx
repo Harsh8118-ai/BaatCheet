@@ -1,4 +1,3 @@
-// components/ChatHeader.jsx
 import { Moon, ArrowLeft } from 'lucide-react';
 
 

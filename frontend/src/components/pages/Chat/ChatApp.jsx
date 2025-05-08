@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import socket from './socket';
+import socket from '../../store/socket';
 import axios from 'axios';
 import { useMood } from './MoodContext';
-import { moodThemes } from './theme';
-
+import { moodThemes } from '../../store/theme';
+import useChatSocket from '../../store/useChatSocket';
 import ChatHeader from './ChatHeader';
 import TypingIndicator from './TypindIndicator';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import MoodPicker from './MoodPicker';
 import EmojiPicker from './EmojiPicker';
-import { handleKeyPress } from './useChatInput';
+import { handleKeyPress } from '../../store/useChatInput';
 
 const ChatApp = () => {
   const { state } = useLocation();
@@ -36,118 +36,39 @@ const ChatApp = () => {
   const typingTimeoutRef = useRef(null);
   const BASE = import.meta.env.VITE_BACKEND_URL;
   const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
+  const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
 
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    socket.connect();
-    socket.emit('join', userId);
-
-    socket.on('onlineUsers', (onlineUserIds) => {
-      setIsFriendOnline(onlineUserIds.includes(receiverId));
-    });
-
-    socket.on('userOnline', (onlineUserId) => {
-      if (onlineUserId === receiverId) {
-        setIsFriendOnline(true);
+   // Load the conversation when the component mounts
+   useEffect(() => {
+    const loadConversation = async () => {
+      try {
+        setIsLoading(true);
+        const res = await axios.get(`${BASE}/chat/conversation/${userId}/${receiverId}`);
+        setMessages(res.data);
+        setIsLoading(false);
+      } catch (err) {
+        console.error(err);
+        setIsLoading(false);
       }
-    });
-
-    socket.on('userOffline', (offlineUserId) => {
-      if (offlineUserId === receiverId) {
-        setIsFriendOnline(false);
-      }
-    });
-
-    socket.on('messageDelivered', ({ messageId, tempId }) => {
-      setMessages(prev =>
-        prev.map(msg =>
-          msg._id === tempId ? { ...msg, _id: messageId, status: 'delivered' } : msg
-        )
-      );
-    });
-
-
-    socket.on('messageReceived', (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    socket.on('typing', ({ senderId }) => {
-      if (senderId === receiverId) {
-        setIsTyping(true);
-        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = setTimeout(() => {
-          setIsTyping(false);
-        }, 3000);
-      }
-    });
-
-
-    socket.on('messagesSeen', ({ by }) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.senderId === by ? { ...msg, status: 'seen' } : msg
-        )
-      );
-    });
-
-    socket.on('messageReaction', ({ messageId, type, userId }) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg._id === messageId
-            ? {
-              ...msg,
-              reactions: msg.reactions?.some((r) => r.userId === userId)
-                ? msg.reactions.map((r) =>
-                  r.userId === userId ? { ...r, type } : r
-                )
-                : [...(msg.reactions || []), { userId, type }],
-            }
-            : msg
-        )
-      );
-    });
-
-
-    // Add the message:statusUpdate event listener here
-    socket.on('message:statusUpdate', (updatedMessage) => {
-      console.log('Received message status update:', updatedMessage);
-
-      // Ensure the ID is a string for consistent comparison
-      const messageId = updatedMessage._id.toString();
-
-      setMessages((prevMessages) => {
-        return prevMessages.map((msg) => {
-          // Ensure consistent ID comparison by converting both to strings
-          const msgId = msg._id.toString();
-
-          if (msgId === messageId) {
-            console.log(`Updating message ${msgId} status to ${updatedMessage.status}`);
-            return { ...msg, status: updatedMessage.status };
-          }
-          return msg;
-        });
-      });
-    });
-    loadConversation();
-
-    return () => {
-      socket.off('onlineUsers');
-      socket.off('userOnline');
-      socket.off('userOffline');
-      socket.off('messageReceived');
-      socket.off('typing');
-      socket.off('messagesSeen');
-      socket.off('messageDelivered');
-      socket.off('messageReaction');
-      socket.off('message:statusUpdate');
-      socket.disconnect();
     };
-  }, [userId, receiverId]);
+
+    loadConversation(); // This will run on initial render or when receiverId changes
+  }, [receiverId, userId]); // This ensures it runs whenever the receiverId or userId changes
+
+  // Use custom hook for socket events
+  useChatSocket({
+    userId,
+    receiverId,
+    setMessages,
+    setIsTyping,
+    setIsFriendOnline,
+  });
+  
 
 
   useEffect(() => {
@@ -161,19 +82,6 @@ const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadConversation = async () => {
-    try {
-      setIsLoading(true);
-      const res = await axios.get(`${BASE}/chat/conversation/${userId}/${receiverId}`);
-      setMessages(res.data);
-      setIsLoading(false);
-    } catch (err) {
-      console.error(err);
-      setIsLoading(false);
-    }
-  };
-
-
 
   const handleTyping = () => {
     socket.emit('typing', { senderId: userId, receiverId });
@@ -181,7 +89,7 @@ const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
 
 
   const onKeyPress = (e) => handleKeyPress(e, handleSendMessage);
-  
+
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() && !file && !isRecording) return;
@@ -206,7 +114,7 @@ const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
 
         fileUrl = uploadRes.data.secure_url;
         const ext = file.name.split('.').pop().toLowerCase();
-        
+
 
         if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) messageType = 'image';
         else if (['mp3', 'wav', 'ogg'].includes(ext)) messageType = 'voice';
@@ -225,6 +133,7 @@ const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
         messageType,
         fileUrl,
         fileType,
+        mood,
       };
 
       // 3. Emit message via socket
@@ -296,7 +205,7 @@ const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
         />
         <TypingIndicator isTyping={isTyping} />
       </div>
-      
+
       {/* Message list with proper padding */}
       <div className="flex-1 overflow-y-auto px-4 mt-16 py-2 space-y-3 pb-20">
         <MessageList
@@ -311,11 +220,12 @@ const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
           messagesEndRef={messagesEndRef}
         />
       </div>
-      
+
       {/* Fixed input at the bottom */}
       <div className="sticky bottom-0 z-10">
         {showMoodPicker && (
           <MoodPicker
+            userId={userId}
             currentMood={mood}
             onSelect={(m) => {
               setMood(m);

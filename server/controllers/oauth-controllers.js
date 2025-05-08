@@ -10,7 +10,7 @@ const generateToken = (user) => {
   );
 };
 
-// ✅ OAuth Login (Google/GitHub)
+// OAuth Login (Google/GitHub)
 const oauthLogin = async (req, res) => {
   try {
     const { email, username, googleId, githubId } = req.body;
@@ -74,7 +74,7 @@ const oauthLogin = async (req, res) => {
 };
 
 
-// ✅ Update Username
+// Update Username
 const updateUsername = async (req, res) => {
   try {
     const { userId, newUsername } = req.body;

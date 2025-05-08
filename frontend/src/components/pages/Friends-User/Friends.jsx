@@ -16,9 +16,9 @@ export default function Friends() {
     <div className="flex flex-col items-center  justify-center">
 
 
-      {/* ✅ Card Container */}
+      {/* Card Container */}
       <div className="w-full bg-gray-950 shadow-lg rounded-lg p-6 space-y-4">
-        {/* ✅ Invite Code Section */}
+        {/* Invite Code Section */}
         <InviteCode />
 
         <FindUser />

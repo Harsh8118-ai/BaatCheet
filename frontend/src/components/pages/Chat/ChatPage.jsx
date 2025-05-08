@@ -10,7 +10,7 @@ const ChatPage = () => {
 
   return (
       <div className="h-screen flex flex-col bg-gray-100">
-          {/* ✅ Chat Component (Scrollable) */}
+          {/* Chat Component (Scrollable) */}
           <div className="flex-1 overflow-y-auto">
               <ChatApp receiverId={friendId} friendUsername={friendUsername} />
           </div>

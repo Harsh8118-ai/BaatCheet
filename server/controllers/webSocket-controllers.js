@@ -2,6 +2,7 @@ const cloudinary = require('cloudinary').v2; // Ensure Cloudinary is configured 
 const Message = require('../models/chat-model');
 const streamifier = require('streamifier'); // Required for streaming files to Cloudinary
 const fs = require('fs'); // For file system operations
+const User = require("../models/user-model");
 
 const onlineUsers = new Map();
 
@@ -9,7 +10,7 @@ const initializeSocket = (io) => {
   io.on("connection", (socket) => {
     console.log("👤 New user connected:", socket.id);
 
-    // ✅ Join room & track user
+    // Join room & track user
     socket.on("join", (userId) => {
       socket.userId = userId; // Save on socket
       socket.join(userId);
@@ -23,71 +24,67 @@ const initializeSocket = (io) => {
       console.log(`📌 User ${userId} joined room: ${userId}`);
     });
 
-    // ✅ Typing
+    // Typing
     socket.on("typing", ({ senderId, receiverId }) => {
       io.to(receiverId).emit("typing", { senderId });
     });
 
-    // ✅ Sending Message with File Upload
+    // Sending Message with File Upload
     socket.on("sendMessage", async (data) => {
       const { senderId, receiverId, tempId, file } = data;
       const conversationId = [senderId, receiverId].sort().join("_");
       data.conversationId = conversationId;
-
-      // If there is a file (image, video, or voice), handle the upload to Cloudinary
-      if (file) {
-        try {
+    
+      try {
+        // 🔍 Fetch the sender's mood
+        const sender = await User.findById(senderId).select("currentMood");
+        const mood = sender?.currentMood || "default";
+        data.mood = mood;
+        
+        if (file) {
           let fileUrl = '';
-          const fileBuffer = Buffer.from(file, 'base64'); // Assuming file is base64-encoded
-
-          // Upload to Cloudinary
+          const fileBuffer = Buffer.from(file, 'base64');
+    
           const uploadStream = cloudinary.uploader.upload_stream(
-            { resource_type: 'auto' }, // 'auto' for auto-detecting file type (image, video, audio)
-            (error, result) => {
+            { resource_type: 'auto' },
+            async (error, result) => {
               if (error) {
                 console.error('Error uploading to Cloudinary:', error);
                 return;
               }
-              fileUrl = result.secure_url; // Store the file URL
+    
+              fileUrl = result.secure_url;
+    
+              const message = new Message({ ...data, fileUrl, status: "sent" });
+              await message.save();
+    
+              io.to(receiverId).emit("messageReceived", { ...message.toObject(), status: "delivered" });
+              io.to(senderId).emit("messageDelivered", { messageId: message._id, tempId });
+              await Message.findByIdAndUpdate(message._id, { status: "delivered" });
+    
+              console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId} with file`);
             }
           );
-
-          // Stream file to Cloudinary
+    
           streamifier.createReadStream(fileBuffer).pipe(uploadStream);
-
-          // Wait for the upload to complete before saving the message
-          while (!fileUrl) {
-            // Waiting for Cloudinary upload to complete
-          }
-
-          // After uploading the file, create the message with the URL
-          const message = new Message({ ...data, fileUrl, status: "sent" });
+        } else {
+          // No file, just save the message with mood
+          const message = new Message({ ...data, status: "sent" });
           await message.save();
-
+    
           io.to(receiverId).emit("messageReceived", { ...message.toObject(), status: "delivered" });
           io.to(senderId).emit("messageDelivered", { messageId: message._id, tempId });
-
           await Message.findByIdAndUpdate(message._id, { status: "delivered" });
-
-          console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId} with file`);
-        } catch (error) {
-          console.error('Error handling file upload:', error);
+    
+          console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId}`);
         }
-      } else {
-        // If no file, simply save the message
-        const message = new Message({ ...data, status: "sent" });
-        await message.save();
-
-        io.to(receiverId).emit("messageReceived", { ...message.toObject(), status: "delivered" });
-        io.to(senderId).emit("messageDelivered", { messageId: message._id, tempId });
-
-        await Message.findByIdAndUpdate(message._id, { status: "delivered" });
-
-        console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId}`);
+      } catch (err) {
+        console.error("Error in sendMessage:", err);
       }
     });
+    
 
-    // ✅ Seen Status - FIXED
+    // Seen Status - FIXED
     socket.on("markAsSeen", async ({ userId, contactId }) => {
       try {
         const updatedMessages = await Message.find({
@@ -122,13 +119,13 @@ const initializeSocket = (io) => {
       }
     });
 
-    // ✅ Reactions
+    // Reactions
     socket.on("reactMessage", ({ messageId, type, userId }) => {
       io.emit("messageReaction", { messageId, type, userId });
       console.log(`💬 Reaction on message ${messageId} by ${userId}: ${type}`);
     });
 
-    // ✅ Handle Disconnect
+    // Handle Disconnect
     socket.on("disconnect", () => {
       const userId = socket.userId;
       if (userId) {

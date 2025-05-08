@@ -55,13 +55,9 @@ const ReactionBar = ({
     };
   }, [showPicker]);
 
-  // Debug console log - remove in production
-  useEffect(() => {
-    console.log('ReactionBar rendering with quickReactions:', quickReactions);
-  }, []);
 
   const handleReactionClick = (emoji) => {
-    console.log('Reaction clicked:', emoji);
+    
     // Toggle reaction: remove if already selected
     if (currentUserReaction === emoji) {
       onReact(null); // remove reaction
@@ -72,7 +68,6 @@ const ReactionBar = ({
 
   const handleEmojiClick = (emojiData) => {
     const emoji = emojiData.emoji;
-    console.log('Emoji selected from picker:', emoji);
     handleReactionClick(emoji);
     setShowPicker(false);
   };

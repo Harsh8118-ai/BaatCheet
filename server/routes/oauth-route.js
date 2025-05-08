@@ -15,7 +15,7 @@ const generateToken = (user) => {
   );
 };
 
-// ✅ GitHub Authentication
+// GitHub Authentication
 router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
 
 router.get(
@@ -30,7 +30,7 @@ router.get(
   }
 );
 
-// ✅ Google Authentication
+// Google Authentication
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 router.get(
@@ -45,10 +45,10 @@ router.get(
   }
 );
 
-// ✅ OAuth Login Route (For Manual API Calls)
+// OAuth Login Route (For Manual API Calls)
 router.post("/oauth", oauthLogin);
 
-// ✅ Update Username Route
+// Update Username Route
 router.put("/update-username", updateUsername);
 
 module.exports = router;

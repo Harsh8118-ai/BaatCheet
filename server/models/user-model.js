@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema(
       enum: ["manual", "google", "github"],
       default: "manual",
     },    
+    currentMood: {
+      type: String,
+      enum: ["default", "happy", "calm", "romantic", "dark", "energetic", "professional"],
+      default: "default",
+    },
   },
   { timestamps: true }
 );

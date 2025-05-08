@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, CheckCheck, Clock } from 'lucide-react';
 import ReactionBar from './ReactionBar';
-import { moodThemes } from './theme';
+import { moodThemes } from '../../store/theme';
 import VoiceMessagePlayer from './VoiceMessagePlayer';
 
 const ChatMessage = ({
@@ -19,7 +19,7 @@ const ChatMessage = ({
   const [selectedReaction, setSelectedReaction] = useState(null); // For storing the selected reaction
 
   // Fallback theme
-  const theme = moodThemes[mood] || moodThemes['default'];
+  const theme = moodThemes[message.mood] || moodThemes['default'];
 
   // Format the timestamp
   const formatTime = (timestamp) => {
@@ -119,22 +119,22 @@ const ChatMessage = ({
       onClick={handleMessageClick} // Trigger the onClick event
     >
       <div
-        className={`
-        relative flex flex-col justify-end max-w-xs md:max-w-md px-4 py-2 mx-1 rounded-xl ${theme.shadow} transition-all
-        ${isOwn ? theme.msgBgOwn : 'bg-gray-600'} 
-        ${isOwn ? theme.msgTextOwn : theme.text}
-        ${isOwn ? 'self-end' : 'self-start'}
-        hover:shadow-lg
-      `}
+        className={`relative flex flex-col justify-end max-w-xs md:max-w-md px-4 py-2 mx-1 rounded-xl ${theme.shadow} transition-all
+    ${isOwn ? theme.msgBgOwn : theme.msgBgReceiver} 
+    ${isOwn ? theme.msgTextOwn : theme.msgTextReceiver}
+    ${isOwn ? 'self-end' : 'self-start'}
+    hover:shadow-lg
+  `}
       >
+
         {renderMessageContent()}
 
-        
+
         {renderReactions()}
 
 
         {/* Render time only if the message is clicked */}
-        
+
 
         {/* Render selected reaction emoji in the right bottom corner */}
         {/* {selectedReaction && (
@@ -157,10 +157,10 @@ const ChatMessage = ({
         )}
       </div>
       {clicked && (
-          <div className="flex mt-1 space-x-2 text-xs opacity-70">
-            <span>{getStatusIcon()} &nbsp;</span> <span>{formatTime(message.createdAt)}  </span>
-          </div>
-        )}
+        <div className="flex mt-1 space-x-2 text-xs opacity-70">
+          <span>{getStatusIcon()} &nbsp;</span> <span>{formatTime(message.createdAt)}  </span>
+        </div>
+      )}
     </div>
   );
 };
