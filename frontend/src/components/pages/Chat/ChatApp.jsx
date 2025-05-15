@@ -57,7 +57,7 @@ const ChatApp = () => {
       }
     };
 
-    loadConversation(); // This will run on initial render or when receiverId changes
+    loadConversation(); 
   }, [receiverId, userId]);
 
   //Load the currentMood 

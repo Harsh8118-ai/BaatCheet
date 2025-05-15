@@ -70,6 +70,21 @@ const ChatMessage = ({
             </div>
           </div>
         );
+        case 'emoji':
+      return (
+        <div className="flex items-center gap-2">
+          <p className="text-3xl">{message.message}</p>
+          {!isOwn && message.emojiSoundUrl && (
+            <button
+              onClick={() => new Audio(message.emojiSoundUrl).play()}
+              className="text-gray-500 hover:text-gray-800"
+              title="Replay Sound"
+            >
+              🔊
+            </button>
+          )}
+        </div>
+      );
       default:
         return <p className="break-words">{message.message}</p>;
     }
@@ -107,19 +122,22 @@ const ChatMessage = ({
   };
 
   const hasPlayedRef = useRef(false);
+  const playedEmojiMessages = new Set();
 
   useEffect(() => {
-    if (
-      message.messageType === 'emoji' &&
-      message.emojiSoundUrl &&
-      !isOwn &&
-      !hasPlayedRef.current
-    ) {
-      const audio = new Audio(message.soundUrl);
-      audio.play().catch((err) => console.error("Emoji sound play error:", err));
-      hasPlayedRef.current = true;
-    }
-  }, [message, isOwn]);
+  if (
+    message.messageType === 'emoji' &&
+    message.emojiSoundUrl &&
+    !isOwn &&
+    message.status !== 'read'
+  ) {
+    const audio = new Audio(message.emojiSoundUrl);
+    audio.play()
+      .catch(err => console.error("Emoji sound play error:", err));
+  }
+}, [message]);
+
+
 
   return (
     <div
