@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Check, CheckCheck, Clock } from 'lucide-react';
 import ReactionBar from './ReactionBar';
 import { moodThemes } from '../../store/theme';
@@ -14,21 +14,17 @@ const ChatMessage = ({
   clicked,
   onReaction
 }) => {
-  // State for managing the reaction bar
   const [showReactionBar, setShowReactionBar] = useState(false);
-  const [selectedReaction, setSelectedReaction] = useState(null); // For storing the selected reaction
+  const [selectedReaction, setSelectedReaction] = useState(null);
 
-  // Fallback theme
   const theme = moodThemes[message.mood] || moodThemes['default'];
 
-  // Format the timestamp
   const formatTime = (timestamp) => {
     if (!timestamp) return '';
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Get message status icon - use message.status directly from props
   const getStatusIcon = () => {
     if (!isOwn) return null;
 
@@ -48,7 +44,6 @@ const ChatMessage = ({
     }
   };
 
-  // Render the message content based on its type
   const renderMessageContent = () => {
     switch (message.messageType) {
       case 'image':
@@ -58,7 +53,6 @@ const ChatMessage = ({
             alt="Image"
             className="w-full max-w-md sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
           />
-
         );
       case 'voice':
         return (
@@ -81,7 +75,6 @@ const ChatMessage = ({
     }
   };
 
-  // Render reaction counts if any
   const renderReactions = () => {
     if (!message.reactions || message.reactions.length === 0) return null;
 
@@ -103,49 +96,48 @@ const ChatMessage = ({
   };
 
   const handleMessageClick = () => {
-    setShowReactionBar(true);  // Immediately show the reaction bar on click
-    onClick();  // Trigger the parent click handler (for time display)
+    setShowReactionBar(true);
+    onClick();
   };
 
   const handleReactionSelect = (reactionType) => {
-    setSelectedReaction(reactionType);  // Store the selected reaction
-    onReaction(reactionType);  // Pass reaction to parent for updating reactions
-    setShowReactionBar(false);  // Hide reaction bar after selecting
+    setSelectedReaction(reactionType);
+    onReaction(reactionType);
+    setShowReactionBar(false);
   };
+
+  const hasPlayedRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      message.messageType === 'emoji' &&
+      message.emojiSoundUrl &&
+      !isOwn &&
+      !hasPlayedRef.current
+    ) {
+      const audio = new Audio(message.soundUrl);
+      audio.play().catch((err) => console.error("Emoji sound play error:", err));
+      hasPlayedRef.current = true;
+    }
+  }, [message, isOwn]);
 
   return (
     <div
-      className={`flex flex-col items-${isOwn ? 'end' : 'start'}  mb-3`}
-      onClick={handleMessageClick} // Trigger the onClick event
+      className={`flex flex-col items-${isOwn ? 'end' : 'start'} mb-3`}
+      onClick={handleMessageClick}
     >
       <div
         className={`relative flex flex-col justify-end max-w-xs md:max-w-md px-4 py-2 mx-1 rounded-xl ${theme.shadow} transition-all
-    ${isOwn ? theme.msgBgOwn : theme.msgBgReceiver} 
-    ${isOwn ? theme.msgTextOwn : theme.msgTextReceiver}
-    ${isOwn ? 'self-end' : 'self-start'}
-    hover:shadow-lg
-  `}
+          ${isOwn ? theme.msgBgOwn : theme.msgBgReceiver} 
+          ${isOwn ? theme.msgTextOwn : theme.msgTextReceiver}
+          ${isOwn ? 'self-end' : 'self-start'}
+          hover:shadow-lg`}
       >
-
         {renderMessageContent()}
-
-
         {renderReactions()}
 
-
-        {/* Render time only if the message is clicked */}
-
-
-        {/* Render selected reaction emoji in the right bottom corner */}
-        {/* {selectedReaction && (
-          <div className="absolute bottom-0 right-0 -mr-1 -mb-1 flex items-center justify-center h-6 w-6 rounded-full bg-white shadow-md">
-            <span className="text-sm">{selectedReaction}</span>
-          </div>
-        )} */}
-
-        {/* If this message is clicked, show reaction options */}
         {clicked && showReactionBar && (
-          <div className={`absolute -top-10  ${isOwn ? 'right-0' : 'left-0'} z-10`}>
+          <div className={`absolute -top-10 ${isOwn ? 'right-0' : 'left-0'} z-10`}>
             <ReactionBar
               onReact={handleReactionSelect}
               currentUserReaction={message.reactions?.find(r => r.userId === currentUser._id)?.type || null}
@@ -156,9 +148,11 @@ const ChatMessage = ({
           </div>
         )}
       </div>
+
       {clicked && (
         <div className="flex mt-1 space-x-2 text-xs opacity-70">
-          <span>{getStatusIcon()} &nbsp;</span> <span>{formatTime(message.createdAt)}  </span>
+          <span>{getStatusIcon()} &nbsp;</span>
+          <span>{formatTime(message.createdAt)}</span>
         </div>
       )}
     </div>

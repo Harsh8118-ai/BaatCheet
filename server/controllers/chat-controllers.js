@@ -1,8 +1,11 @@
 const Message = require("../models/chat-model");
 const User = require("../models/user-model");
+const EmojiVoice = require("../models/emoji-model");
+
 
 // 📩 Send Message & Save in DB
 const sendMessage = async (req, res) => {
+  console.log("🔥 sendMessage controller hit");
   try {
     const {
       senderId,
@@ -27,8 +30,15 @@ const sendMessage = async (req, res) => {
     }
     const mood = sender.currentMood;
 
-    console.log("Sender mood:", sender?.currentMood);
+    let emojiSoundUrl = null;
 
+    // ✅ If it's an emoji message, try to get the sound URL
+    if (messageType === "emoji" && message) {
+      const voiceRecord = await EmojiVoice.findOne({ user: senderId });
+      if (voiceRecord && voiceRecord.voices && voiceRecord.voices[message]) {
+        emojiSoundUrl = voiceRecord.voices[message];
+      }
+    }
 
     const newMessage = new Message({
       senderId,
@@ -39,9 +49,11 @@ const sendMessage = async (req, res) => {
       fileUrl,
       fileType,
       audioUrl,
-      mood, // Use the fetched mood
+      mood, // 😎
+      emojiSoundUrl, // 🔥 Only for emoji messages
     });
 
+    console.log(newMessage);
     await newMessage.save();
     res.status(201).json(newMessage);
   } catch (error) {

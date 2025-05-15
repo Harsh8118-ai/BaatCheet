@@ -30,7 +30,7 @@ const MessageList = ({
   return (
     <>
       {messages.map((msg) => (
-        <div key={msg._id || `temp-${Date.now()}`} className="mb-1">
+        <div key={`${msg._id}-${msg.createdAt}`} className="mb-1">
           <ChatMessage
             message={msg}
             isOwn={msg.senderId === userId}
@@ -43,6 +43,7 @@ const MessageList = ({
           />
         </div>
       ))}
+
       <div ref={messagesEndRef} />
     </>
   );

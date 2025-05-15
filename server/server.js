@@ -15,6 +15,7 @@ const oauthRoute = require("./routes/oauth-route");
 const friendRoute = require("./routes/friend-route");
 const messageRoute = require("./routes/chat-route");
 const otpRoutes = require("./routes/otp-route");
+const emojiRoutes = require("./routes/emoji-route");
 
 // Import WebSocket Controller
 const initializeSocket = require("./controllers/webSocket-controllers");
@@ -25,7 +26,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "http://192.168.151.15:5173",
+      "http://192.168.160.15:5173",
     ],
     methods: ["GET", "POST"],
     credentials: true,
@@ -53,6 +54,7 @@ app.use("/api/oauth", oauthRoute);
 app.use("/api/friends", friendRoute);
 app.use("/api/chat", messageRoute);
 app.use("/api/otp", otpRoutes);
+app.use("/api/emoji", emojiRoutes);
 
 // Initialize WebSocket
 initializeSocket(io);

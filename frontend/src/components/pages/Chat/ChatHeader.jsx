@@ -8,9 +8,11 @@ const ChatHeader = ({
   isFriendOnline,
   isTyping,
   onBack,
+  currentMood,
+  currentText,
 }) => {
   return (
-    <div className="fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-4 py-3 bg-white shadow-md border-b border-gray-200">
+    <div className={`fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-4 py-3 ${currentMood} ${currentText} shadow-md `}>
       {/* Left Section: Back button (for mobile), Avatar, and Username */}
       <div className="flex items-center space-x-3 min-w-0">
         {/* Back Button on small screens */}
@@ -51,7 +53,7 @@ const ChatHeader = ({
           className="text-gray-500 hover:text-gray-700"
           title="Mood Picker"
         >
-          <Moon size={20} />
+          <Moon size={24} />
         </button>
       </div>
     </div>

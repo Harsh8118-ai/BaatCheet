@@ -10,7 +10,7 @@ import TypingIndicator from './TypindIndicator';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import MoodPicker from './MoodPicker';
-import EmojiPicker from './EmojiPicker';
+import EmojiPicker from './EmojiPicker/EmojiPicker';
 import { handleKeyPress } from '../../store/useChatInput';
 
 const ChatApp = () => {
@@ -85,7 +85,7 @@ const ChatApp = () => {
     };
 
     fetchCurrentMood(); // Fetch current mood when the component mounts or mood picker is shown
-  }, [showMoodPicker]); 
+  }, [showMoodPicker]);
 
 
 
@@ -181,7 +181,7 @@ const ChatApp = () => {
         },
       ]);
 
-      // Clear input field and file state
+
       setInputValue('');
       setFile(null);
     } catch (err) {
@@ -234,6 +234,8 @@ const ChatApp = () => {
           isFriendOnline={isFriendOnline}
           isTyping={isTyping}
           onBack={() => navigate(-1)}
+          currentMood={currentTheme.accent}
+          currentText={currentTheme.text}
         />
         <TypingIndicator isTyping={isTyping} />
       </div>
@@ -268,12 +270,37 @@ const ChatApp = () => {
         )}
         {showEmojiPicker && (
           <EmojiPicker
-            onSelect={(emoji) => {
-              setInputValue((prev) => prev + emoji);
+            onSelect={({ emoji, messageType, emojiSoundUrl }) => {
+              const tempId = Date.now().toString();
+
+              const payload = {
+                senderId: userId,
+                receiverId,
+                tempId,
+                message: emoji, // store emoji as message
+                messageType,     // "emoji"
+                emojiSoundUrl,   // sound to play
+                mood,
+              };
+
+              socket.emit('sendMessage', payload);
+
+              setMessages((prev) => [
+                ...prev,
+                {
+                  ...payload,
+                  _id: tempId,
+                  createdAt: new Date().toISOString(),
+                  status: 'sending',
+                  reactions: [],
+                },
+              ]);
+
               setShowEmojiPicker(false);
             }}
             onClose={() => setShowEmojiPicker(false)}
           />
+
         )}
         <MessageInput
           inputValue={inputValue}
