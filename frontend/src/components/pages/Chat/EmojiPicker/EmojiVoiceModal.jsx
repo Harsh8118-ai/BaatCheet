@@ -48,12 +48,6 @@ const EmojiVoiceModal = ({ emojiObj, onClose, onUploadSuccess }) => {
     const data = await cloudinaryRes.json();
     const cloudinaryUrl = data.secure_url;
 
-    console.log("🟢 Upload complete. Cloudinary URL:", cloudinaryUrl);
-    console.log("📦 Sending to backend:", {
-      emoji: emojiObj.emoji,
-      emojiSoundUrl: cloudinaryUrl,
-    });
-
     const token = localStorage.getItem("token");
     if (!emojiObj.emoji || !cloudinaryUrl) {
       console.error('Missing emoji or sound URL');

@@ -13,7 +13,7 @@ exports.home = async (req, res) => {
 // GET /api/emoji/get
 exports.getEmojiVoicesForUser = async (req, res) => {
   try {
-    const userId = req.user._id; 
+    const userId = req.user._id;
     const record = await EmojiVoice.findOne({ user: userId });
 
     if (!record) {
@@ -29,10 +29,9 @@ exports.getEmojiVoicesForUser = async (req, res) => {
 
 // POST /api/emoji/post
 exports.setEmojiVoice = async (req, res) => {
-  console.log("✅ POST /api/emoji/post hit");
 
   const { emoji, emojiSoundUrl } = req.body;
-  const userId = req.user?._id; // safer access
+  const userId = req.user?._id; 
 
   if (!emoji || !emojiSoundUrl) {
     console.warn("❌ Missing required fields:", req.body);
@@ -47,10 +46,8 @@ exports.setEmojiVoice = async (req, res) => {
     } else {
       record.voices.set(emoji, emojiSoundUrl);
     }
-    console.log("📥 Received from frontend:", { emoji, emojiSoundUrl, userId });
 
     await record.save();
-    console.log("✅ Saved record:", record);
 
     res.status(200).json({
       message: `Voice set for emoji ${emoji}`,
