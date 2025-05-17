@@ -70,21 +70,24 @@ const ChatMessage = ({
             </div>
           </div>
         );
-        case 'emoji':
-      return (
-        <div className="flex items-center gap-2">
-          <p className="text-3xl">{message.message}</p>
-          {!isOwn && message.emojiSoundUrl && (
-            <button
-              onClick={() => new Audio(message.emojiSoundUrl).play()}
-              className="text-gray-500 hover:text-gray-800"
-              title="Replay Sound"
-            >
-              🔊
-            </button>
-          )}
-        </div>
-      );
+      case 'emoji':
+        return (
+          <div className="flex items-center gap-2">
+            <p className="text-3xl">{message.message}</p>
+            {!isOwn && message.emojiSoundUrl && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  new Audio(message.emojiSoundUrl).play();
+                }}
+                className="text-gray-500 hover:text-gray-800"
+                title="Replay Sound"
+              >
+                🔊
+              </button>
+            )}
+          </div>
+        );
       default:
         return <p className="break-words">{message.message}</p>;
     }
@@ -125,17 +128,17 @@ const ChatMessage = ({
   const playedEmojiMessages = new Set();
 
   useEffect(() => {
-  if (
-    message.messageType === 'emoji' &&
-    message.emojiSoundUrl &&
-    !isOwn &&
-    message.status !== 'read'
-  ) {
-    const audio = new Audio(message.emojiSoundUrl);
-    audio.play()
-      .catch(err => console.error("Emoji sound play error:", err));
-  }
-}, [message]);
+    if (
+      message.messageType === 'emoji' &&
+      message.emojiSoundUrl &&
+      !isOwn &&
+      message.status !== 'read'
+    ) {
+      const audio = new Audio(message.emojiSoundUrl);
+      audio.play()
+        .catch(err => console.error("Emoji sound play error:", err));
+    }
+  }, [message]);
 
 
 
@@ -145,12 +148,17 @@ const ChatMessage = ({
       onClick={handleMessageClick}
     >
       <div
-        className={`relative flex flex-col justify-end max-w-xs md:max-w-md px-4 py-2 mx-1 rounded-xl ${theme.shadow} transition-all
-          ${isOwn ? theme.msgBgOwn : theme.msgBgReceiver} 
-          ${isOwn ? theme.msgTextOwn : theme.msgTextReceiver}
-          ${isOwn ? 'self-end' : 'self-start'}
-          hover:shadow-lg`}
+        className={`relative flex flex-col justify-end max-w-xs md:max-w-md px-4 py-2 mx-1 rounded-xl transition-all
+    ${message.messageType !== 'emoji' ? `
+      ${theme.shadow} 
+      ${isOwn ? theme.msgBgOwn : theme.msgBgReceiver} 
+      ${isOwn ? theme.msgTextOwn : theme.msgTextReceiver} 
+      ${isOwn ? 'self-end' : 'self-start'} 
+      hover:shadow-lg
+    ` : ''}
+  `}
       >
+
         {renderMessageContent()}
         {renderReactions()}
 

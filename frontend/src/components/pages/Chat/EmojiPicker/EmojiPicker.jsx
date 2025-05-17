@@ -50,47 +50,60 @@ const EmojiPicker = ({ onSelect, onClose }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-2 absolute bottom-20 left-4 right-4 max-h-64 z-10">
+    <div className="bg-gray-300 rounded-lg shadow-lg p-2 absolute bottom-20 left-4 right-4 max-h-96 z-10">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-medium text-sm">Voice Emojis</h3>
+        <span></span>
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setEditMode((prev) => !prev)}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-600 hover:text-gray-700"
           >
-            <Pencil size={16} />
+            <Pencil size={20} />
           </button>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-red-600 hover:text-gray-700 shadow-sm shadow-gray-700 rounded-xl"
           >
-            <X size={16} />
+            <X size={22} />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-6 gap-1 overflow-y-auto max-h-40">
-        {voiceEmojis.map((item) => (
-          <div key={item.emoji} className="flex flex-col items-center text-xl">
-            <button
-              onClick={() => handleSelectEmoji(item)}
-              className="p-1 hover:bg-gray-100 rounded text-center"
-            >
-              {item.emoji}
-            </button>
+      {/* Emoji Grid */}
+      <div className="grid grid-cols-6 gap-2 overflow-y-auto max-h-64">
+        {voiceEmojis.map((item) => {
+          const isCustom = Boolean(voiceMap[item.emoji]);
+          const soundUrl = isCustom ? voiceMap[item.emoji] : item.defaultSound;
 
-            {editMode && (
+          return (
+            <div key={item.emoji} className="flex flex-col items-center text-xl">
+              {/* Emoji Select/Preview */}
               <button
-                onClick={() => setSelectedEmoji(item.emoji)}
-                className="text-sm text-gray-500 hover:text-gray-700 mt-1"
+                onClick={() =>
+                  editMode
+                    ? new Audio(soundUrl).play()
+                    : handleSelectEmoji(item)
+                }
+                className="p-1 hover:bg-gray-100 rounded text-center"
               >
-                Edit Voice 🎤
+                {item.emoji}
               </button>
-            )}
-          </div>
-        ))}
+
+              {/* Edit Button */}
+              {editMode && (
+                <button
+                  onClick={() => setSelectedEmoji(item.emoji)}
+                  className="text-xs text-gray-800 hover:underline mt-1 hover:scale-105"
+                >
+                  {isCustom ? 'Change 🎙️' : 'Set🎙️'}
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
 
+      {/* Voice Upload Modal */}
       {selectedEmoji && (
         <EmojiVoiceModal
           emojiObj={voiceEmojis.find((item) => item.emoji === selectedEmoji)}
