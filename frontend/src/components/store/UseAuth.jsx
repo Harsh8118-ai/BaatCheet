@@ -24,7 +24,7 @@ export function useAuth() {
       if (!token) {
         console.warn("⚠️ No token found in localStorage");
         if (!["/", "/login", "/signup"].includes(location.pathname)) {
-          navigate("/login");
+          navigate("/");
         }
         setLoading(false);
         return;
@@ -44,7 +44,7 @@ export function useAuth() {
             localStorage.removeItem("token");
             setUser(null);
             if (!["/", "/login", "/signup"].includes(location.pathname)) {
-              navigate("/login");
+              navigate("/");
             }
             return;
           }
@@ -63,7 +63,7 @@ export function useAuth() {
       } catch (error) {
         console.error("❌ Error fetching user:", error.message);
         if (!["/", "/login", "/signup"].includes(location.pathname)) {
-          navigate("/login");
+          navigate("/");
         }
       } finally {
         setLoading(false);

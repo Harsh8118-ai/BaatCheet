@@ -85,46 +85,53 @@ const SentRequests = () => {
 
 
   return (
-    <div className="p-4">
+   <>
   <ToastContainer position="top-right" autoClose={2000} />
   {loading ? (
     <p className="text-gray-400 text-center mt-6">Loading...</p>
   ) : sentRequests.length === 0 ? (
     <p className="text-gray-500 text-center mt-6">No sent friend requests.</p>
   ) : (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {sentRequests.map((req) => (
-        <div
-          key={req._id}
-          className="bg-[#141414] border border-[#2a2a2a] p-5 rounded-2xl shadow-sm flex flex-col justify-between"
-        >
-          <div className="flex items-start gap-4">
-            <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center">
-              <BsPerson className="text-[#1e1e1e] text-xl" />
-            </div>
-            <div>
-              <p className="text-white font-semibold text-base">{req.username || "Unknown User"}</p>
-              <p className="text-sm text-gray-400">{req.email || "No email provided"}</p>
-              <p className="text-sm text-gray-500 mt-1">
-                Sent{" "}
-                {req?.createdAt && !isNaN(new Date(req.createdAt))
-                  ? formatDistanceToNow(new Date(req.createdAt), { addSuffix: true })
-                  : "at unknown time"}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => handleWithdraw(req._id)}
-            className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 rounded-full flex items-center justify-center gap-2 transition"
+    <div className="space-y-4">
+      {sentRequests.map((req) => {
+        const initials = req.username?.slice(0, 2).toUpperCase() || "U";
+        const sentTime =
+          req?.createdAt && !isNaN(new Date(req.createdAt))
+            ? formatDistanceToNow(new Date(req.createdAt), { addSuffix: true })
+            : "unknown time";
+
+        return (
+          <div
+            key={req._id}
+            className="flex items-center justify-between bg-gray-950 rounded-2xl px-4 py-3 shadow-sm border border-white/10"
           >
-            <UserPlus size={16} /> Withdraw
-          </button>
-        </div>
-      ))}
+            {/* Avatar + Name */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 text-white flex items-center justify-center font-semibold text-sm">
+                  {initials}
+                </div>
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+              </div>
+              <div>
+                <p className="text-gray-300 font-semibold">{req.username || "Unknown"}</p>
+                <p className="text-xs text-gray-500">{sentTime}</p>
+              </div>
+            </div>
+
+            {/* Cancel button */}
+            <button
+              onClick={() => handleWithdraw(req._id)}
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-red-500 text-red-500 hover:bg-green-50 transition"
+            >
+             <span className="text-lg">✕</span>
+            </button>
+          </div>
+        );
+      })}
     </div>
   )}
-</div>
-
+</>
   );
 };
 

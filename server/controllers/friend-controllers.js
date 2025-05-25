@@ -221,17 +221,38 @@ exports.getReceivedRequests = async (req, res) => {
       return res.status(404).json({ message: "Friend data not found" });
     }
 
-    // Fetch user details for each received request
-    const receivedRequests = await User.find(
-      { _id: { $in: friendData.friendRequests } },
-      "username email inviteCode");
+    const receivedMeta = friendData.friendRequests; // [{ _id, status, createdAt }]
+    const receivedUserIds = receivedMeta.map((r) => r._id);
 
-    res.status(200).json(receivedRequests);
+    // Fetch user details
+    const users = await User.find(
+      { _id: { $in: receivedUserIds } },
+      "username email inviteCode"
+    );
+
+    // Merge user info with metadata (status, createdAt)
+    const enriched = users.map((user) => {
+      const meta = receivedMeta.find(
+        (r) => r._id.toString() === user._id.toString()
+      );
+
+      return {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        inviteCode: user.inviteCode,
+        status: meta?.status,
+        createdAt: meta?.createdAt,
+      };
+    });
+
+    res.status(200).json(enriched);
   } catch (error) {
     console.error("Error fetching received requests:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 
 // Withdraw Sent Friend Request

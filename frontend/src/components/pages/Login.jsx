@@ -57,7 +57,7 @@ const Login = () => {
       
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.user.id);
-      navigate("/profile");
+      navigate("/home");
 
     } catch (err) {
 
@@ -75,22 +75,13 @@ const Login = () => {
   };
 
   return (
-    <motion.div
-      className="flex justify-center items-center min-h-screen bg-gray-950
-      
-      p-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.div
+  <>
+   <motion.div
         className="w-full max-w-md p-8 bg-gray-950 rounded-lg shadow-lg border border-gray-500"
         initial={{ y: 50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, type: "spring" }}
       >
-        <h2 className="text-2xl font-semibold text-gray-400 text-center">Welcome back</h2>
-        <p className="text-gray-500 text-center mb-6">Enter your credentials to access your account</p>
 
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
@@ -162,15 +153,9 @@ const Login = () => {
           </motion.button>
         </div>
 
-        {/* 🔹 Signup Link */}
-        <p className="text-gray-500 text-center mt-4">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-green-500 hover:underline">
-            Sign up here
-          </Link>
-        </p>
+       
       </motion.div>
-    </motion.div>
+  </>
   );
 };
 

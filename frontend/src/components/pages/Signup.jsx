@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaGoogle, FaGithub } from "react-icons/fa";
@@ -92,9 +92,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-950 brightness-105">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-      <motion.div
+    <>
+    <motion.div
         className="bg-gray-950
  p-8 rounded-3xl shadow-md w-96 brightness-95 border border-gray-500"
         initial={{ opacity: 0, y: -50 }}
@@ -109,11 +108,7 @@ export default function Signup() {
         >
           Create an Account
         </motion.h2>
-        <motion.h6
-          className="text-sm font-semibold mb-5 text-left text-gray-400"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}>Enter your information to create an account</motion.h6>
+        
 
         {error && <p className="text-red-500 text-sm mb-3 text-center">{error}</p>}
 
@@ -229,10 +224,8 @@ export default function Signup() {
         </div>
 
 
-        <p className="text-center text-sm mt-4 text-gray-400">
-          Already have an account? <Link to="/login" className="text-green-500 hover:underline">Login</Link>
-        </p>
+        
       </motion.div>
-    </div>
+    </>
   );
 }

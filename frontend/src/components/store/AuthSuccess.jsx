@@ -34,17 +34,17 @@ const AuthSuccess = () => {
             setModalOpen(true);
             console.log("🔹 Opening Modal");
           } else {
-            navigate("/");
+            navigate("/home");
           }
         }, 500);
       } catch (error) {
         console.error("❌ Invalid Token:", error);
         localStorage.removeItem("token");
-        navigate("/login");
+        navigate("/");
       }
     } else {
       console.warn("⚠ No token found in URL");
-      navigate("/login");
+      navigate("/");
     }
   }, [searchParams, navigate]);
 

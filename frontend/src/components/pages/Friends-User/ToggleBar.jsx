@@ -12,8 +12,8 @@ const ToggleBar = () => {
       <div className="flex items-center justify-between bg-gray-800 rounded-full p-2">
         {[
           { id: "friends", label: "Friends" },
-          { id: "requests", label: "Friend Requests" },
-          { id: "sent", label: "Sent Requests" },
+          { id: "requests", label: "Requests" },
+          { id: "sent", label: "Sent" },
         ].map((tab) => (
           <button
             key={tab.id}

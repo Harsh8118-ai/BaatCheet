@@ -1,0 +1,147 @@
+import { useEffect, useState, useRef } from "react";
+import { Bell, Search, Users, Settings, MoreVertical, X, User, LogOut } from "lucide-react";
+import FindUser from "./components/pages/Friends-User/FindUser";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const Temp = () => {
+    const [searchActive, setSearchActive] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [friends, setFriends] = useState([]);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const inputRef = useRef(null);
+    const navigate = useNavigate();
+
+    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+    useEffect(() => {
+        const fetchFriends = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+            try {
+                const res = await axios.get(`${BASE_URL}/friends/friends-list`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setFriends(res.data.friends || []);
+            } catch (err) {
+                console.error("Failed to fetch friends.");
+            }
+        };
+        fetchFriends();
+    }, []);
+
+    const filteredFriends = friends.filter(friend =>
+        friend.username.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/");
+    };
+
+    useEffect(() => {
+        if (searchActive && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [searchActive]);
+
+    return (
+        <div className="bg-white px-4 py-3 shadow-sm relative">
+            {/* Top Bar */}
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl font-semibold text-purple-600 flex items-center gap-2">
+                    <span className="bg-purple-100 text-purple-600 p-1 rounded-full">💬</span>
+                    ChatSync
+                </h1>
+
+                <div className="flex items-center gap-4 text-gray-500 relative">
+                    {/* Search Input */}
+                    <div className="relative transition-all duration-300">
+                        <div className="flex items-center space-x-2">
+                            <div
+                                className={`transition-all duration-300 ease-in-out ${
+                                    searchActive ? "w-48 opacity-100" : "w-0 opacity-0"
+                                } overflow-hidden`}
+                            >
+                                <input
+                                    type="text"
+                                    ref={inputRef}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    placeholder="Search friends..."
+                                    className="px-3 py-1 w-full text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                />
+                            </div>
+                            {!searchActive ? (
+                                <Search
+                                    className="w-5 h-5 cursor-pointer"
+                                    onClick={() => setSearchActive(true)}
+                                />
+                            ) : (
+                                <X
+                                    className="w-5 h-5 cursor-pointer"
+                                    onClick={() => {
+                                        setSearchActive(false);
+                                        setSearchTerm("");
+                                    }}
+                                />
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Friends Icon */}
+                    <Link to="/friends">
+                        <Users className="w-5 h-5 cursor-pointer" />
+                    </Link>
+
+                    {/* Settings Dropdown */}
+                    <div className="relative">
+                        <Settings
+                            className="w-5 h-5 cursor-pointer"
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                        />
+                        {dropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50 py-2 text-sm text-gray-700">
+                                <Link
+                                    to="/profile"
+                                    className="flex items-center px-4 py-2 hover:bg-gray-100"
+                                    onClick={() => setDropdownOpen(false)}
+                                >
+                                    <User className="w-4 h-4 mr-2" />
+                                    Profile
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center w-full px-4 py-2 hover:bg-gray-100"
+                                >
+                                    <LogOut className="w-4 h-4 mr-2" />
+                                    Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Horizontal Scroll Section */}
+            <div className="flex gap-4 overflow-x-auto pb-2">
+                <div className="flex flex-col items-center text-sm text-gray-700">
+                    <FindUser />
+                </div>
+
+                {(searchActive ? filteredFriends : friends).map((friend, idx) => (
+                    <div key={idx} className="relative flex flex-col items-center text-sm text-gray-700">
+                        <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white relative">
+                            <span className="text-base">{friend.username?.[0]}</span>
+                            <div className={`absolute bottom-1 right-1 w-3 h-3 rounded-full border-2 border-white bg-green-500`} />
+                            <MoreVertical className="absolute top-1 right-1 w-4 h-4 text-gray-600" />
+                        </div>
+                        <span>{friend.username}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default Temp;

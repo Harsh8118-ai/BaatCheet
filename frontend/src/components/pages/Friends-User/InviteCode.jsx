@@ -74,7 +74,7 @@ const InviteCode = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full mb-3">
       {error && <p className="text-red-500 text-center mb-3">{error}</p>}
 
       {/* Desktop / Profile Tab Layout */}
@@ -114,13 +114,9 @@ const InviteCode = () => {
       {/* Mobile / Friends Page Layout */}
       <div className="block md:hidden bg-gray-950 border border-[#2a2a2a] rounded-xl px-4 py-3 mt-4">
         <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-sm font-medium text-gray-300">Invite Friends to Join</h2>
-            <p className="text-xs text-gray-400">Share your invite code to connect with friends</p>
-          </div>
           {inviteCode && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-white font-semibold">Invite Code: {inviteCode}</span>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="text-sm text-white font-semibold">Your Invite Code: {inviteCode}</span>
               <button
                 onClick={handleCopy}
                 className="text-gray-400 hover:text-white transition"
@@ -131,12 +127,17 @@ const InviteCode = () => {
           )}
         </div>
 
-        {inviteCode && (
-          <button className="mt-3 w-full flex items-center justify-center gap-2 bg-[#2a2a2a] text-sm text-white py-2 rounded-lg hover:bg-[#3b3b3d] transition">
-            <BsPersonPlus />
-            Enter Invite Code
-          </button>
-        )}
+        {inviteCode ? <div></div>
+        :
+  <button
+    onClick={generateInviteCode}
+    className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition font-semibold"
+    disabled={loading}
+  >
+    {loading ? "Generating..." : "Generate Invite Code"}
+  </button>
+}
+
       </div>
     </div>
   );

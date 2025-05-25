@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { BsPerson } from "react-icons/bs";
+import { formatDistanceToNow } from "date-fns";
+
 
 
 const RecievedRequests = () => {
@@ -85,7 +85,7 @@ const RecievedRequests = () => {
         throw new Error(data.message);
       }
 
-      setReceivedRequests((prev) => 
+      setReceivedRequests((prev) =>
         prev.filter((request) => request._id !== _id)
       );
 
@@ -118,69 +118,65 @@ const RecievedRequests = () => {
   };
 
   return (
-    <div className="w-full min-h-screen mx-auto p-4 sm:p-6 bg-gray-950 text-white">
-    <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} />
-    {error && <p className="text-red-500 text-center">{error}</p>}
-    {loading ? (
-      <p className="text-gray-400 text-center">Loading...</p>
-    ) : (
-      <>
-        <div data-aos="fade-up">
-          {receivedRequests.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
-              {receivedRequests.map((request) => (
-                <motion.div
-                  key={request._id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-gray-950 p-4 rounded-xl shadow-md flex flex-col justify-between border border-white/10"
-                >
-                  <div className="flex items-start gap-4">
-                  <div className="mt-2 w-10 h-8 bg-white rounded-full flex items-center justify-center text-white text-lg">
-                  <BsPerson className="text-[#1e1e1e] font-extrabold text-xl" />
-                  </div>
-                    <div>
-                      <p className="font-semibold text-white text-base">
-                        {request.username || "Unknown User"}
-                      </p>
-                      <p className="text-sm text-gray-400 mb-2">
-                        {request.mutualFriends || Math.floor(Math.random() * 6) + 1} mutual friends
-                      </p>
-                      <p className="text-sm text-gray-300">
-                        {request.message || "Hey! I'd love to connect and discuss tech!"}
-                      </p>
+    <div className=" w-full bg-gray-950 min-h-screen">
+      {receivedRequests.length === 0 ? (
+        <div className="text-gray-500 text-center mt-10">
+          No incoming friend requests.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {receivedRequests.map((request) => {
+            const initials = request.username?.slice(0, 2).toUpperCase() || "U";
+            const rawDate = request?.createdAt;
+            const receivedTime = rawDate
+              ? formatDistanceToNow(new Date(rawDate), { addSuffix: true })
+              : "unknown time";
+
+
+            return (
+              <div
+                key={request._id}
+                className="bg-gray-950 rounded-xl shadow-sm border border-white/10 flex items-center justify-between px-2 py-3"
+              >
+                {/* Left section: avatar + name */}
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="w-11 h-11 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
+                      {initials}
                     </div>
                   </div>
-  
-                  <div className="flex mt-4 gap-3">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleConfirm(request._id, "accept")}
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-1 rounded-full transition"
-                    >
-                      ✓ Accept
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleDelete(request._id)}
-                      className="w-full bg-gray-800 hover:bg-gray-700 text-white py-1 rounded-full transition"
-                    >
-                      ✕ Decline
-                    </motion.button>
+
+                  <div>
+                    <div className="text-gray-300 font-bold">
+                      {request.username || "Unknown"}
+                    </div>
+                    <div className="text-gray-300 font-bold">
+                      <p className="text-xs text-gray-500">{receivedTime}</p>
+                    </div>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">No received requests.</p>
-          )}
+                </div>
+
+                {/* Right section: buttons */}
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => handleDelete(request._id)}
+                    className="w-8 h-8 flex items-center justify-center rounded-full border border-red-500 text-red-500 hover:bg-red-50 transition"
+                  >
+                    <span className="text-lg">✕</span>
+                  </button>
+                  <button
+                    onClick={() => handleConfirm(request._id, "accept")}
+                    className="w-8 h-8 flex items-center justify-center rounded-full border border-green-500 text-green-500 hover:bg-green-50 transition"
+                  >
+                    <span className="text-lg">✓</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </>
-    )}
-  </div>
+      )}
+    </div>
   );
 };
 
