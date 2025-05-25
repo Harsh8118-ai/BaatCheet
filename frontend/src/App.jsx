@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import "aos/dist/aos.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Profile from "./components/pages/Profile";
-import HomePage from "./HomePage";
 import Friends from "./components/pages/Friends-User/Friends";
 import ChatPage from "./components/pages/Chat/ChatPage";
 import { useAuth } from "./components/store/UseAuth";
