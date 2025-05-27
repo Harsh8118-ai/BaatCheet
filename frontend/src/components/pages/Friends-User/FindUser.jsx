@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Dialog } from "@headlessui/react";
 import InviteCode from "./InviteCode";
+import { UserPlus } from "lucide-react";
 
 const FindUser = () => {
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
@@ -16,34 +17,34 @@ const FindUser = () => {
 
   // 🔎 Automatically search user when all 6 digits are filled
   useEffect(() => {
-  const code = digits.join("");
+    const code = digits.join("");
 
-  if (code.length === 6 && !code.includes("")) {
-    searchUser(code);
-  } else {
-    setUser(null); // Clear user if the code is incomplete
-  }
-}, [digits]);
+    if (code.length === 6 && !code.includes("")) {
+      searchUser(code);
+    } else {
+      setUser(null); // Clear user if the code is incomplete
+    }
+  }, [digits]);
 
 
   const handleChange = (index, value) => {
-  if (!/^\d?$/.test(value)) return; // Allow only single digit or empty
+    if (!/^\d?$/.test(value)) return; // Allow only single digit or empty
 
-  const updated = [...digits];
-  updated[index] = value;
-  setDigits(updated);
+    const updated = [...digits];
+    updated[index] = value;
+    setDigits(updated);
 
-  // Focus next input
-  if (value && index < 5) {
-    inputsRef.current[index + 1]?.focus();
-  }
+    // Focus next input
+    if (value && index < 5) {
+      inputsRef.current[index + 1]?.focus();
+    }
 
-  // Check if full code is entered and trigger search
-  const fullCode = updated.join("");
-  if (fullCode.length === 6 && !updated.includes("")) {
-    searchUser(fullCode);
-  }
-};
+    // Check if full code is entered and trigger search
+    const fullCode = updated.join("");
+    if (fullCode.length === 6 && !updated.includes("")) {
+      searchUser(fullCode);
+    }
+  };
 
 
   const handleKeyDown = (index, e) => {
@@ -114,12 +115,12 @@ const FindUser = () => {
           setIsModalOpen(true);
           reset();
         }}
-        className="flex flex-col items-center text-sm text-gray-700 dark:text-white"
-      >
-        <div className="w-14 h-14 rounded-full bg-gray-300 flex items-center justify-center text-xl">
-          +
+        className="flex flex-col items-center text-sm text-gray-700 dark:text-white">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-xl shadow-sm shadow-black">
+          <UserPlus className="w-6 h-6 text-white" />
+
         </div>
-        <span className="text-gray-900 text-xs mt-2">Add Friend</span>
+        <span className="text-gray-900 text-sm ">Add Friend</span>
       </button>
 
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">

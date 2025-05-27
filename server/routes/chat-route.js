@@ -6,6 +6,7 @@ const {
   markMessagesAsRead,
   setMood,
   getMood,
+  getRecentChats,
 } = require("../controllers/chat-controllers");
 const Message = require("../models/chat-model");
 const upload = require("../middlewares/upload");
@@ -62,5 +63,7 @@ router.post("/message/:id/react", async (req, res) => {
   }
 });
 
+// Get Chats List
+router.get("/recent/:userId", getRecentChats);
 
 module.exports = router;

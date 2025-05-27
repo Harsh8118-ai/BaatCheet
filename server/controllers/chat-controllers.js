@@ -2,6 +2,8 @@ const Message = require("../models/chat-model");
 const User = require("../models/user-model");
 const EmojiVoice = require("../models/emoji-model");
 
+const mongoose = require("mongoose");
+
 
 // 📩 Send Message & Save in DB
 const sendMessage = async (req, res) => {
@@ -144,6 +146,66 @@ const getMood = async (req, res) => {
   }
 };
 
+// 📬 Get all recent chats for a user
+const getRecentChats = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const userObjectId = new mongoose.Types.ObjectId(userId); // ✅ this is key
+
+    const recentMessages = await Message.aggregate([
+      {
+        $match: {
+          $or: [
+            { senderId: userObjectId },
+            { receiverId: userObjectId }
+          ]
+        }
+      },
+      {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $group: {
+          _id: "$conversationId",
+          message: { $first: "$$ROOT" }
+        }
+      },
+      {
+        $replaceRoot: { newRoot: "$message" }
+      }
+    ]);
+
+    // Step 2: Enrich with user info + unread count
+    const enriched = await Promise.all(
+      recentMessages.map(async (msg) => {
+        const otherUserId = msg.senderId.toString() === userId ? msg.receiverId : msg.senderId;
+
+        const user = await User.findById(otherUserId).lean();
+
+        const unreadCount = await Message.countDocuments({
+          conversationId: msg.conversationId,
+          receiverId: userObjectId,
+          status: { $ne: "read" }
+        });
+
+        return {
+          ...msg,
+          username: user?.username || "Unknown",
+          avatar: user?.avatar || null,
+          unreadCount
+        };
+      })
+    );
+
+    res.status(200).json(enriched);
+  } catch (error) {
+    console.error("Error fetching recent chats:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 
 module.exports = {
   sendMessage,
@@ -151,4 +213,5 @@ module.exports = {
   markMessagesAsRead,
   setMood,
   getMood,
+  getRecentChats,
 };

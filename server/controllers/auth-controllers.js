@@ -124,7 +124,7 @@ const user = async (req, res) => {
 // **Update User Profile**
 const updateProfile = async (req, res) => {
   try {
-    const { username, email, mobileNumber } = req.body;
+    const { username, email, mobileNumber, profileUrl } = req.body;
     const userId = req.user._id;
 
     const userDetails = await User.findById(userId);
@@ -149,6 +149,7 @@ const updateProfile = async (req, res) => {
     userDetails.username = username || userDetails.username;
     userDetails.email = email || userDetails.email;
     userDetails.mobileNumber = mobileNumber || userDetails.mobileNumber;
+    userDetails.profileUrl = profileUrl || userDetails.profileUrl;
 
     await userDetails.save();
 
@@ -159,6 +160,7 @@ const updateProfile = async (req, res) => {
         username: userDetails.username,
         email: userDetails.email,
         mobileNumber: userDetails.mobileNumber,
+        profileUrl: userDetails.profileUrl,
       },
     });
   } catch (error) {
@@ -166,6 +168,7 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 // **Send OTP for verification**
 const sendOtpForPasswordReset = async (req, res) => {

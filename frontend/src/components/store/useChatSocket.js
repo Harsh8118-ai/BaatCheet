@@ -7,6 +7,7 @@ const useChatSocket = ({
   setMessages,
   setIsTyping,
   setIsFriendOnline,
+  setOnlineUserIds,
 }) => {
   const typingTimeoutRef = useRef(null);
 
@@ -16,14 +17,17 @@ const useChatSocket = ({
 
     socket.on('onlineUsers', (onlineUserIds) => {
       setIsFriendOnline(onlineUserIds.includes(receiverId));
+      setOnlineUserIds?.(onlineUserIds);
     });
 
     socket.on('userOnline', (id) => {
       if (id === receiverId) setIsFriendOnline(true);
+      setOnlineUserIds?.(prev => [...new Set([...(prev || []), id])]); 
     });
 
     socket.on('userOffline', (id) => {
       if (id === receiverId) setIsFriendOnline(false);
+      setOnlineUserIds?.(prev => (prev || []).filter(uid => uid !== id)); 
     });
 
     socket.on('messageDelivered', ({ messageId, tempId }) => {

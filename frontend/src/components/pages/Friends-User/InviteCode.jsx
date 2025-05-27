@@ -77,69 +77,34 @@ const InviteCode = () => {
     <div className="w-full mb-3">
       {error && <p className="text-red-500 text-center mb-3">{error}</p>}
 
-      {/* Desktop / Profile Tab Layout */}
-      <div className="hidden md:block bg-gray-950 border border-[#2a2a2a] rounded-xl p-1">
-        
-        {inviteCode ? (
-          <div className="flex justify-between items-center bg-gray-950 rounded-lg p-4">
-            <div>
-              <p className="text-xs text-gray-400">Your Invite Code</p>
-              <h1 className="text-2xl font-bold tracking-widest text-white">{inviteCode}</h1>
-              <p className="text-xs text-gray-400 mt-1">Share this code with friends to connect</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCopy}
-                className="px-3 py-2 rounded-md bg-[#2b2b2d] text-sm text-white border border-gray-600 hover:bg-[#3b3b3d]"
-              >
-                {copied ? <FaCheck /> : <FaClipboard />}
-              </button>
-              <button className="px-4 py-2 rounded-md bg-[#845ef7] hover:bg-[#724cf3] text-white text-sm flex items-center gap-2">
-                <IoShareSocialOutline size={16} />
-                Share
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            onClick={generateInviteCode}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition font-semibold"
-            disabled={loading}
-          >
-            {loading ? "Generating..." : "Generate Invite Code"}
-          </button>
-        )}
-      </div>
+      {inviteCode ? (
 
-      {/* Mobile / Friends Page Layout */}
-      <div className="block md:hidden bg-gray-950 border border-[#2a2a2a] rounded-xl px-4 py-3 mt-4">
-        <div className="flex justify-between items-center">
-          {inviteCode && (
-            <div className="flex items-center gap-2 justify-center">
-              <span className="text-sm text-white font-semibold">Your Invite Code: {inviteCode}</span>
-              <button
-                onClick={handleCopy}
-                className="text-gray-400 hover:text-white transition"
-              >
-                <FaClipboard />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {inviteCode ? <div></div>
+        <div className="block bg-gray-950 border border-[#2a2a2a] rounded-xl px-4 py-3 mt-4">
+          <div className="flex justify-between items-center">
+            {inviteCode && (
+              <div className="flex items-center gap-2 justify-center">
+                <span className="text-sm text-white font-semibold">Your Invite Code: {inviteCode}</span>
+                <button
+                  onClick={handleCopy}
+                  className="text-gray-400 hover:text-white transition"
+                >
+                  <FaClipboard />
+                </button>
+              </div>
+            )}
+          </div></div>)
         :
-  <button
-    onClick={generateInviteCode}
-    className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition font-semibold"
-    disabled={loading}
-  >
-    {loading ? "Generating..." : "Generate Invite Code"}
-  </button>
-}
+        <button
+          onClick={generateInviteCode}
+          className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition font-semibold"
+          disabled={loading}
+        >
+          {loading ? "Generating..." : "Generate Invite Code"}
+        </button>
+      }
 
-      </div>
     </div>
+    
   );
 };
 

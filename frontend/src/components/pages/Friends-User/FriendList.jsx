@@ -88,7 +88,7 @@ const FriendList = () => {
             >
               {/* Gradient Header */}
                <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleMessage(friend._id, friend.username)}>
-    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold text-gray-600 uppercase">
+    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-lg font-bold text-gray-600 uppercase">
       {friend.username?.slice(0, 2)}
     </div>
     <div className="truncate max-w-[180px]">

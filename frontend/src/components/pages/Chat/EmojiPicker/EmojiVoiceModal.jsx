@@ -38,6 +38,7 @@ const EmojiVoiceModal = ({ emojiObj, onClose, onUploadSuccess }) => {
   const formData = new FormData();
   formData.append('file', blob);
   formData.append('upload_preset', PRESET);
+  formData.append('folder', `voice_emoji_uploads`);
 
   try {
     const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, {

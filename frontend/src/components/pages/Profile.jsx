@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FaUser, FaEnvelope, FaPhoneAlt, FaSmile, FaEdit, FaSave, FaTimes } from "react-icons/fa";
-import { FaArrowLeft } from "react-icons/fa";
-import { FaPencilAlt } from "react-icons/fa";
+import {
+  FaUser, FaEnvelope, FaPhoneAlt, FaSmile,
+  FaEdit, FaSave, FaTimes, FaArrowLeft, FaPencilAlt, FaImage
+} from "react-icons/fa";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -11,7 +12,9 @@ const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState({ username: "", email: "", mobileNumber: "" });
+  const [form, setForm] = useState({
+    username: "", email: "", mobileNumber: "", profileUrl: ""
+  });
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
 
@@ -37,6 +40,7 @@ const Profile = () => {
         username: data.user.username || "",
         email: data.user.email || "",
         mobileNumber: data.user.mobileNumber || "",
+        profileUrl: data.user.profileUrl || "",
       });
     } catch {
       navigate("/");
@@ -90,12 +94,16 @@ const Profile = () => {
               title="Edit Profile"
             >
               <FaPencilAlt />
-
             </button>
           )}
 
-          <div className="text-5xl mb-4">
-            <FaUser />
+          {/* Profile Image */}
+          <div className="mb-4">
+            <img
+              src={form.profileUrl || "https://via.placeholder.com/100"}
+              alt="Profile"
+              className="w-24 h-24 rounded-full object-cover border-2 border-white"
+            />
           </div>
 
           {editMode ? (
@@ -118,11 +126,31 @@ const Profile = () => {
                 value={form.mobileNumber}
                 onChange={(e) => setForm({ ...form, mobileNumber: e.target.value })}
               />
+              <input
+                className="w-full px-3 py-2 mb-2 bg-gray-700 text-white rounded"
+                placeholder="Profile Picture URL"
+                value={form.profileUrl}
+                onChange={(e) => setForm({ ...form, profileUrl: e.target.value })}
+              />
               <div className="flex justify-center gap-4 mt-2">
-                <button onClick={handleUpdate} className="bg-green-600 px-4 py-2 rounded flex items-center gap-2 hover:bg-green-500">
+                <button
+                  onClick={handleUpdate}
+                  className="bg-green-600 px-4 py-2 rounded flex items-center gap-2 hover:bg-green-500"
+                >
                   <FaSave /> Save
                 </button>
-                <button onClick={() => setEditMode(false)} className="bg-gray-600 px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-500">
+                <button
+                  onClick={() => {
+                    setEditMode(false);
+                    setForm({
+                      username: user.username,
+                      email: user.email,
+                      mobileNumber: user.mobileNumber,
+                      profileUrl: user.profileUrl,
+                    });
+                  }}
+                  className="bg-gray-600 px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-500"
+                >
                   <FaTimes /> Cancel
                 </button>
               </div>
@@ -169,7 +197,8 @@ const Profile = () => {
           <FaArrowLeft className="text-sm" />
           <span className="text-sm font-medium">Back</span>
         </motion.button>
-      </div></>
+      </div>
+    </>
   );
 };
 

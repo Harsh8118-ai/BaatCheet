@@ -39,11 +39,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["manual", "google", "github"],
       default: "manual",
-    },    
+    },
     currentMood: {
       type: String,
       enum: ["default", "happy", "calm", "romantic", "dark", "energetic", "professional"],
       default: "default",
+    },
+    profileUrl: {
+      type: String,
+      default: "",
     },
   },
   { timestamps: true }

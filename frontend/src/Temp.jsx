@@ -1,8 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Search, Users, Settings, MoreVertical, X, User, LogOut } from "lucide-react";
+import { Bell, Search, Users, Settings, MoreVertical, X, User, LogOut, UserPlus } from "lucide-react";
 import FindUser from "./components/pages/Friends-User/FindUser";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import ChatList from "./components/pages/Chat/ChatList";
+import { moodThemes } from "./components/store/theme";
+
 
 const Temp = () => {
     const [searchActive, setSearchActive] = useState(false);
@@ -11,8 +14,31 @@ const Temp = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const inputRef = useRef(null);
     const navigate = useNavigate();
-
+    const [userMood, setUserMood] = useState("default");
+    const mood = userMood;
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+
+
+    useEffect(() => {
+        const fetchUserMood = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const res = await axios.get(`${BASE_URL}/auth/user`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const currentMood = res.data?.user?.currentMood || "default";
+                setUserMood(currentMood);
+            } catch (err) {
+                console.error("Failed to fetch user mood.");
+            }
+        };
+
+        fetchUserMood();
+    }, []);
+
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -45,8 +71,15 @@ const Temp = () => {
         }
     }, [searchActive]);
 
+    const handleMessage = (friendId, friendUsername) => {
+        navigate(`/chat/${friendId}`, { state: { friendUsername } });
+    };
+
+
+
+
     return (
-        <div className="bg-white px-4 py-3 shadow-sm relative">
+        <div className={`${moodThemes[mood]?.bg} px-4 py-3 shadow-sm relative h-screen`}>
             {/* Top Bar */}
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-semibold text-purple-600 flex items-center gap-2">
@@ -59,9 +92,8 @@ const Temp = () => {
                     <div className="relative transition-all duration-300">
                         <div className="flex items-center space-x-2">
                             <div
-                                className={`transition-all duration-300 ease-in-out ${
-                                    searchActive ? "w-48 opacity-100" : "w-0 opacity-0"
-                                } overflow-hidden`}
+                                className={`transition-all duration-300 ease-in-out ${searchActive ? "w-48 opacity-100" : "w-0 opacity-0"
+                                    } overflow-hidden`}
                             >
                                 <input
                                     type="text"
@@ -124,22 +156,23 @@ const Temp = () => {
             </div>
 
             {/* Horizontal Scroll Section */}
-            <div className="flex gap-4 overflow-x-auto pb-2">
+            <div className="flex gap-4 overflow-x-auto pb-2" >
                 <div className="flex flex-col items-center text-sm text-gray-700">
                     <FindUser />
                 </div>
 
                 {(searchActive ? filteredFriends : friends).map((friend, idx) => (
-                    <div key={idx} className="relative flex flex-col items-center text-sm text-gray-700">
-                        <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white relative">
-                            <span className="text-base">{friend.username?.[0]}</span>
-                            <div className={`absolute bottom-1 right-1 w-3 h-3 rounded-full border-2 border-white bg-green-500`} />
+                    <div key={idx} className="relative flex flex-col items-center text-sm text-gray-700" onClick={() => handleMessage(friend._id, friend.username)}>
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-white relative">
+                            <span className="text-base" >{friend.username?.slice(0, 2).toUpperCase()}</span>
                             <MoreVertical className="absolute top-1 right-1 w-4 h-4 text-gray-600" />
                         </div>
-                        <span>{friend.username}</span>
+                        <span className="text-gray-900 font-bold text-sm">{friend.username}</span>
                     </div>
                 ))}
             </div>
+
+            <ChatList />
         </div>
     );
 };

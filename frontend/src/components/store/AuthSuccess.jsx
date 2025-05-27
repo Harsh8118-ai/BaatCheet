@@ -1,42 +1,52 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import UsernameModal from "./UsernameModal";
+import ProfileModal from "./ProfileModal";
+import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AuthSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   useEffect(() => {
     const token = searchParams.get("token");
     const username = searchParams.get("username");
 
-    console.log("🔹 Token:", token);
-    console.log("🔹 Username:", username);
-
     if (token) {
       try {
         localStorage.setItem("token", token);
         const decoded = jwtDecode(token);
-        console.log("🔹 Decoded Token:", decoded);
+        const userId = decoded.id;
+        localStorage.setItem("userId", userId);
 
-        
-        localStorage.setItem("userId", decoded.id);
-        console.log("User ID stored:", decoded.id);
-
-        const newUser = { id: decoded.id, username };
+        const newUser = { id: userId, username };
         setUser(newUser);
 
-        setTimeout(() => {
-          if (!username || username.startsWith("user_")) {
-            setModalOpen(true);
-            console.log("🔹 Opening Modal");
-          } else {
+        // Fetch user details to check if profile photo exists
+        axios
+          .get(`${BASE_URL}/auth/user`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })
+          .then((res) => {
+            const userData = res.data.user;
+            if (!userData.profileUrl) {
+              setProfileModalOpen(true);
+            } else {
+              navigate("/home");
+            }
+
+          })
+          .catch((err) => {
+            console.error("Failed to fetch user details:", err);
             navigate("/home");
-          }
-        }, 500);
+          });
       } catch (error) {
         console.error("❌ Invalid Token:", error);
         localStorage.removeItem("token");
@@ -48,21 +58,21 @@ const AuthSuccess = () => {
     }
   }, [searchParams, navigate]);
 
-
-  const handleUsernameUpdated = (newUsername, newToken) => {
-    setUser((prev) => ({ ...prev, username: newUsername }));
-    localStorage.setItem("token", newToken);
-  };
-
   return (
     <>
       <h1>Welcome, {user?.username || "Guest"}!</h1>
 
-      <UsernameModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        user={user}
-        onUsernameUpdated={handleUsernameUpdated}
+      <ProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => {
+          setProfileModalOpen(false);
+          navigate("/home");
+        }}
+        userId={user?.id}
+        onProfileUploaded={(url) => {
+          console.log("✅ Profile photo uploaded:", url);
+          navigate("/home");
+        }}
       />
     </>
   );

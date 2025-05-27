@@ -141,7 +141,7 @@ const RecievedRequests = () => {
                 {/* Left section: avatar + name */}
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="w-11 h-11 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 text-white flex items-center justify-center text-sm font-medium">
                       {initials}
                     </div>
                   </div>

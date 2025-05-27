@@ -135,6 +135,7 @@ const ChatApp = () => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', PRESET);
+        formData.append('folder', `chat_uploads`);
 
         const uploadRes = await axios.post(
           `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
