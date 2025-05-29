@@ -8,14 +8,13 @@ const MessageInput = ({
   handleTyping,
   showEmojiPicker,
   setShowEmojiPicker,
-  handleEmojiSelect,
   file,
   setFile,
   handleSendMessage,
   isRecording,
   toggleRecording,
 }) => (
-  <div className="fixed p-4 bg-white border-t border-gray-200 bottom-0">
+  <div className="fixed p-4 bg-transparent bottom-0">
     <div className="flex items-center space-x-2">
       
 

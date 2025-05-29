@@ -192,7 +192,7 @@ const getRecentChats = async (req, res) => {
         return {
           ...msg,
           username: user?.username || "Unknown",
-          avatar: user?.avatar || null,
+          profileUrl: user?.profileUrl || null,
           unreadCount
         };
       })

@@ -27,6 +27,7 @@ const ChatList = () => {
             try {
                 const res = await axios.get(`${BASE_URL}/chat/recent/${userId}`);
                 setChats(Array.isArray(res.data) ? res.data : []);
+
             } catch (err) {
                 console.error("Error fetching chats:", err);
                 setChats([]);
@@ -56,9 +57,15 @@ const ChatList = () => {
     };
 
     // ✉️ Navigate to Chat Function
-    const handleMessage = (friendId, friendUsername) => {
-        navigate(`/chat/${friendId}`, { state: { friendUsername } });
-    };
+    // ✉️ Navigate to Chat Function
+  const handleMessage = (friendId, friendUsername, friendProfileUrl) => {
+  navigate(`/chat/${friendId}`, {
+    state: {
+      friendUsername,
+      friendProfileUrl
+    }
+  });
+};
 
 
 
@@ -72,11 +79,20 @@ const ChatList = () => {
                     const time = formatChatTimestamp(chat.createdAt);
 
                     return (
-                        <div key={chat._id} className="flex items-center gap-4 cursor-pointer hover:bg-gray-100 p-2 rounded-lg relative" onClick={() => handleMessage(otherUserId, chat.username)}>
+                        <div key={chat._id} className="flex items-center gap-4 cursor-pointer hover:bg-gray-100 p-2 rounded-lg relative" onClick={() => handleMessage(otherUserId, chat.username, chat.profileUrl)}>
                             <div className="relative w-12 h-12">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-white font-bold text-lg">
-                                    {chat.username?.[0] || "U"}
-                                </div>
+                                {chat.profileUrl ? (
+                                    <img
+                                        src={chat.profileUrl}
+                                        alt={`${chat.username}'s profile`}
+                                        className="w-14 h-14 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-white font-bold text-lg">
+                                        {chat.username?.[0] || "U"}
+                                    </div>
+                                )}
+
                                 <span
                                     className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400'
                                         }`}

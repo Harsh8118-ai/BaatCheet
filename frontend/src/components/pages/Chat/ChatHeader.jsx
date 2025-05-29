@@ -10,6 +10,7 @@ const ChatHeader = ({
   onBack,
   currentMood,
   currentText,
+  friendProfileUrl,
 }) => {
   return (
     <div className={`fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-4 py-3 ${currentMood} ${currentText} shadow-md `}>
@@ -26,9 +27,17 @@ const ChatHeader = ({
 
         {/* Avatar with online indicator */}
         <div className="relative flex-shrink-0">
-          <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold text-lg">
-            {friendUsername?.charAt(0) || 'C'}
-          </div>
+          {friendProfileUrl ? (
+            <img
+              src={friendProfileUrl}
+              alt="Profile"
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold text-lg">
+              {friendUsername?.charAt(0) || 'C'}
+            </div>
+          )}
           <div
             className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${isFriendOnline ? 'bg-green-400' : 'bg-gray-400'
               }`}

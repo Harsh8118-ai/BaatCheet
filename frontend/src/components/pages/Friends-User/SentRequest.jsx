@@ -108,9 +108,17 @@ const SentRequests = () => {
             {/* Avatar + Name */}
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 text-white flex items-center justify-center font-semibold text-sm">
-                  {initials}
-                </div>
+                <div className="w-11 h-11 rounded-full overflow-hidden  flex items-center justify-center text-sm font-bold text-white">
+                      {req.profileUrl ? (
+                        <img
+                          src={req.profileUrl}
+                          alt={`${req.username}'s profile`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        initials
+                      )}
+                    </div>
                 
               </div>
               <div>

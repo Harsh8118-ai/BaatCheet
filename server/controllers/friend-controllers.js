@@ -152,7 +152,7 @@ exports.getFriendsList = async (req, res) => {
     // Fetch user details for each friend from the Users collection
     const friendsList = await User.find(
       { _id: { $in: friendIds } },
-      "username email inviteCode"
+      "username email inviteCode profileUrl"
     );
 
     res.status(200).json({ friends: friendsList });
@@ -182,7 +182,7 @@ exports.getSentRequests = async (req, res) => {
     // Get basic user info
     const users = await User.find(
       { _id: { $in: sentUserIds } },
-      "username email"
+      "username email profileUrl"
     );
 
     // Merge user info with metadata (status, createdAt)
@@ -197,6 +197,7 @@ exports.getSentRequests = async (req, res) => {
         username: user.username,
         status: meta?.status,
         createdAt: meta?.createdAt,
+        profileUrl:user.profileUrl,
       };
     });
 
@@ -227,7 +228,7 @@ exports.getReceivedRequests = async (req, res) => {
     // Fetch user details
     const users = await User.find(
       { _id: { $in: receivedUserIds } },
-      "username email inviteCode"
+      "username email inviteCode profileUrl"
     );
 
     // Merge user info with metadata (status, createdAt)
@@ -243,6 +244,7 @@ exports.getReceivedRequests = async (req, res) => {
         inviteCode: user.inviteCode,
         status: meta?.status,
         createdAt: meta?.createdAt,
+        profileUrl:user.profileUrl,
       };
     });
 

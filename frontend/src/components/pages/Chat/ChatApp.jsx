@@ -12,11 +12,15 @@ import MessageInput from './MessageInput';
 import MoodPicker from './MoodPicker';
 import EmojiPicker from './EmojiPicker/EmojiPicker';
 import { handleKeyPress } from '../../store/useChatInput';
+import { useParams } from 'react-router-dom';
+
+
 
 const ChatApp = () => {
   const { state } = useLocation();
-  const { friendUsername } = state || {};
-  const receiverId = window.location.pathname.split('/chat/')[1];
+  const { friendId: receiverId } = useParams();
+  const friendUsername = state?.friendUsername || 'Unknown';
+  const friendProfileUrl = state?.friendProfileUrl || null;
   const userId = localStorage.getItem('userId');
   const { mood, setMood } = useMood();
   const navigate = useNavigate();
@@ -33,7 +37,6 @@ const ChatApp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFriendOnline, setIsFriendOnline] = useState(false);
   const messagesEndRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
   const BASE = import.meta.env.VITE_BACKEND_URL;
   const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
@@ -57,7 +60,7 @@ const ChatApp = () => {
       }
     };
 
-    loadConversation(); 
+    loadConversation();
   }, [receiverId, userId]);
 
   //Load the currentMood 
@@ -221,7 +224,7 @@ const ChatApp = () => {
 
 
   const toggleRecording = () => setIsRecording(!isRecording);
-  // console.log(currentTheme.bg);
+  
 
 
   return (<>
@@ -237,6 +240,7 @@ const ChatApp = () => {
           onBack={() => navigate(-1)}
           currentMood={currentTheme.accent}
           currentText={currentTheme.text}
+          friendProfileUrl={friendProfileUrl}
         />
         <TypingIndicator isTyping={isTyping} />
       </div>

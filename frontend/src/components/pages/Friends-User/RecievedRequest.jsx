@@ -141,8 +141,16 @@ const RecievedRequests = () => {
                 {/* Left section: avatar + name */}
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 text-white flex items-center justify-center text-sm font-medium">
-                      {initials}
+                    <div className="w-11 h-11 rounded-full overflow-hidden  flex items-center justify-center text-sm font-bold text-white">
+                      {request.profileUrl ? (
+                        <img
+                          src={request.profileUrl}
+                          alt={`${request.username}'s profile`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        initials
+                      )}
                     </div>
                   </div>
 

@@ -8,16 +8,23 @@ const ChatPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const friendUsername = location.state?.friendUsername || "Unknown";
+  const friendProfileUrl = location.state?.friendProfileUrl || null;
+
 
   return (
     <EmojiVoiceProvider>
       <div className="h-screen flex flex-col bg-gray-100">
-          {/* Chat Component (Scrollable) */}
-          <div className="flex-1 overflow-y-auto">
-              <ChatApp receiverId={friendId} friendUsername={friendUsername} />
-          </div>
+        {/* Chat Component (Scrollable) */}
+        <div className="flex-1 overflow-y-auto">
+          <ChatApp
+            receiverId={friendId}
+            friendUsername={friendUsername}
+            friendProfileUrl={friendProfileUrl}
+          />
+
+        </div>
       </div>
-      </EmojiVoiceProvider>
+    </EmojiVoiceProvider>
   );
 };
 

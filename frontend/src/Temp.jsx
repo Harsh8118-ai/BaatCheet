@@ -71,9 +71,15 @@ const Temp = () => {
         }
     }, [searchActive]);
 
-    const handleMessage = (friendId, friendUsername) => {
-        navigate(`/chat/${friendId}`, { state: { friendUsername } });
-    };
+   // ✉️ Navigate to Chat Function
+  const handleMessage = (friendId, friendUsername, friendProfileUrl) => {
+  navigate(`/chat/${friendId}`, {
+    state: {
+      friendUsername,
+      friendProfileUrl
+    }
+  });
+};
 
 
 
@@ -162,11 +168,22 @@ const Temp = () => {
                 </div>
 
                 {(searchActive ? filteredFriends : friends).map((friend, idx) => (
-                    <div key={idx} className="relative flex flex-col items-center text-sm text-gray-700" onClick={() => handleMessage(friend._id, friend.username)}>
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-white relative">
-                            <span className="text-base" >{friend.username?.slice(0, 2).toUpperCase()}</span>
-                            <MoreVertical className="absolute top-1 right-1 w-4 h-4 text-gray-600" />
+                    <div key={idx} className="relative flex flex-col items-center text-sm text-gray-700" onClick={() => handleMessage(friend._id, friend.username, friend.profileUrl)}>
+                        <div className="relative">
+                            {friend.profileUrl ? (
+                                <img
+                                    src={friend.profileUrl}
+                                    alt={friend.username}
+                                    className="w-16 h-16 rounded-full object-cover border-2 border-purple-400"
+                                />
+                            ) : (
+                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-white">
+                                    <span className="text-base">{friend.username?.slice(0, 2).toUpperCase()}</span>
+                                </div>
+                            )}
+                            <MoreVertical className="absolute top-0 -right-2 w-4 h-4 text-gray-600" />
                         </div>
+
                         <span className="text-gray-900 font-bold text-sm">{friend.username}</span>
                     </div>
                 ))}

@@ -65,9 +65,15 @@ const FriendList = () => {
   };
 
   // ✉️ Navigate to Chat Function
-  const handleMessage = (friendId, friendUsername) => {
-    navigate(`/chat/${friendId}`, { state: { friendUsername } });
-  };
+  const handleMessage = (friendId, friendUsername, friendProfileUrl) => {
+  navigate(`/chat/${friendId}`, {
+    state: {
+      friendUsername,
+      friendProfileUrl
+    }
+  });
+};
+
 
 
   return (
@@ -87,25 +93,33 @@ const FriendList = () => {
               className="flex justify-between items-center w-full overflow-hidden rounded-lg shadow-lg bg-gray-950 border border-white/10 text-white p-4"
             >
               {/* Gradient Header */}
-               <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleMessage(friend._id, friend.username)}>
-    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-lg font-bold text-gray-600 uppercase">
-      {friend.username?.slice(0, 2)}
-    </div>
-    <div className="truncate max-w-[180px]">
-      <div className="font-semibold text-white truncate">{friend.username}</div>
-      <div className="text-sm text-gray-400 capitalize truncate">{friend.status || "Unknown"}</div>
-    </div>
-  </div>
+              <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleMessage(friend._id, friend.username, friend.profileUrl)}>
+                {friend.profileUrl ? (
+                  <img
+                    src={friend.profileUrl}
+                    alt={friend.username}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-lg font-bold text-gray-600 uppercase">
+                    {friend.username?.slice(0, 2)}
+                  </div>
+                )}
+                <div className="truncate max-w-[180px]">
+                  <div className="font-semibold text-white truncate">{friend.username}</div>
+                  <div className="text-sm text-gray-400 capitalize truncate">{friend.status || "Unknown"}</div>
+                </div>
+              </div>
 
-  {/* Remove Button Section */}
-  <motion.button
-    whileHover={{ scale: 1.1 }}
-    whileTap={{ scale: 0.9 }}
-    className="bg-red-100 hover:bg-red-200 p-2 rounded-lg"
-    onClick={() => handleRemoveFriend(friend._id)}
-  >
-    <UserMinus className="text-red-600 w-5 h-5" />
-  </motion.button>
+              {/* Remove Button Section */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="bg-red-100 hover:bg-red-200 p-2 rounded-lg"
+                onClick={() => handleRemoveFriend(friend._id)}
+              >
+                <UserMinus className="text-red-600 w-5 h-5" />
+              </motion.button>
             </motion.div>
           ))}
         </div>
