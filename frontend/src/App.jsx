@@ -7,8 +7,8 @@ import ChatPage from "./components/pages/Chat/ChatPage";
 import { useAuth } from "./components/store/UseAuth";
 import { MoodProvider } from "./components/pages/Chat/MoodContext";
 import AuthSuccess from "./components/store/AuthSuccess";
-import Home from "./home";
-import Temp from "./Temp";
+import Auth from "./Auth";
+import Home from "./Home";
 
 export default function App() {
   const { user } = useAuth();
@@ -27,8 +27,8 @@ export default function App() {
         <div className="flex-1 overflow-y-auto bg-gray-950">
         <MoodProvider >
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Temp />} />
+            <Route path="/" element={<Auth />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/auth-success" element={<AuthSuccess />} />
             <Route path="/friends" element={<Friends />} />

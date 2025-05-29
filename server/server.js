@@ -20,14 +20,13 @@ const emojiRoutes = require("./routes/emoji-route");
 // Import WebSocket Controller
 const initializeSocket = require("./controllers/webSocket-controllers");
 
+const allowedOrigins = process.env.FRONTEND_ORIGIN?.split(",") || [];
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "http://192.168.45.15:5173",
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -35,7 +34,7 @@ const io = new Server(server, {
 
 // CORS & Middleware
 app.use(compression());
-app.use(cors({ origin: io.opts.cors.origin, methods: "GET, POST, PUT, DELETE", credentials: true }));
+app.use(cors({ origin: allowedOrigins, methods: "GET, POST, PUT, DELETE", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(

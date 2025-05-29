@@ -5,10 +5,12 @@ const OTPVerification = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
   const sendOTP = async () => {
     try {
-      await axios.post("http://localhost:5000/api/otp/send-otp", { email });
+      await axios.post(`${BASE_URL}/otp/send-otp`, { email });
       setIsOtpSent(true);
       alert("OTP sent successfully!");
     } catch (error) {
@@ -18,7 +20,7 @@ const OTPVerification = () => {
 
   const verifyOTP = async () => {
     try {
-      await axios.post("http://localhost:5000/api/otp/verify-otp", { email, otp });
+      await axios.post(`${BASE_URL}/otp/verify-otp`, { email, otp });
       alert("OTP verified successfully!");
     } catch (error) {
       alert("Invalid OTP");

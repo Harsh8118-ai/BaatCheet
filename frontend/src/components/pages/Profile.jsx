@@ -5,6 +5,7 @@ import {
   FaUser, FaEnvelope, FaPhoneAlt, FaSmile,
   FaEdit, FaSave, FaTimes, FaArrowLeft, FaPencilAlt, FaImage
 } from "react-icons/fa";
+import ProfileModal from "../store/ProfileModal";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,11 +13,14 @@ const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("");
   const [form, setForm] = useState({
     username: "", email: "", mobileNumber: "", profileUrl: ""
   });
-  const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState("");
+
 
   const fetchUserData = async () => {
     try {
@@ -108,6 +112,12 @@ const Profile = () => {
 
           {editMode ? (
             <>
+              <button
+                onClick={() => setShowPhotoModal(true)}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2 mb-2"
+              >
+                <FaImage /> Edit Profile Photo
+              </button>
               <input
                 className="w-full px-3 py-2 mb-2 bg-gray-700 text-white rounded"
                 placeholder="Username"
@@ -126,12 +136,8 @@ const Profile = () => {
                 value={form.mobileNumber}
                 onChange={(e) => setForm({ ...form, mobileNumber: e.target.value })}
               />
-              <input
-                className="w-full px-3 py-2 mb-2 bg-gray-700 text-white rounded"
-                placeholder="Profile Picture URL"
-                value={form.profileUrl}
-                onChange={(e) => setForm({ ...form, profileUrl: e.target.value })}
-              />
+
+
               <div className="flex justify-center gap-4 mt-2">
                 <button
                   onClick={handleUpdate}
@@ -197,7 +203,21 @@ const Profile = () => {
           <FaArrowLeft className="text-sm" />
           <span className="text-sm font-medium">Back</span>
         </motion.button>
+
+        <ProfileModal
+          isOpen={showPhotoModal}
+          onClose={() => setShowPhotoModal(false)}
+          userId={user?.id}
+          onProfileUploaded={(url) => {
+            setForm((prev) => ({ ...prev, profileUrl: url }));
+            setUser((prev) => ({ ...prev, profileUrl: url }));
+            setShowPhotoModal(false);
+            setStatus("✅ Profile photo updated!");
+          }}
+        />
       </div>
+
+
     </>
   );
 };

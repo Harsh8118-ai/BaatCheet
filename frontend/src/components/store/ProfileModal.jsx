@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import Cropper from "react-easy-crop";
+import Slider from "@mui/material/Slider";
+import getCroppedImg from "./cropImage"; // your helper to get cropped Blob
+
 import { X, UploadCloud, ImagePlus, Trash2 } from "lucide-react";
 
 const diceBearAvatars = [
@@ -21,53 +25,73 @@ const diceBearAvatars = [
   "https://api.dicebear.com/9.x/adventurer/svg?seed=Eden",
   "https://api.dicebear.com/9.x/adventurer/svg?seed=Avery",
   "https://api.dicebear.com/9.x/adventurer/svg?seed=Oliver",
-  "https://api.dicebear.com/9.x/adventurer/svg?seed=Easton"
-]; // example predefined avatars
+  "https://api.dicebear.com/9.x/adventurer/svg?seed=Easton",
+];
 
 const ProfileModal = ({ isOpen, onClose, onProfileUploaded }) => {
-  const [image, setImage] = useState(null);
-  const [previewURL, setPreviewURL] = useState(null);
+  const [image, setImage] = useState(null); // the File or cropped File to upload
+  const [previewURL, setPreviewURL] = useState(null); // URL for preview and cropping
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [showCrop, setShowCrop] = useState(false);
+
   const inputRef = useRef();
 
+  // Cropper state
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  // Environment variables for Cloudinary and backend
   const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const PRESET = import.meta.env.VITE_CLOUDINARY_PROFILE_PRESET_NAME;
+  const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+  // Handle file input change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Please select a valid image file.");
+        return;
+      }
+      const url = URL.createObjectURL(file);
       setImage(file);
-      setPreviewURL(URL.createObjectURL(file));
+      setPreviewURL(url);
+      setSelectedAvatar(null);
+      setShowCrop(true);
       setError("");
-      setSelectedAvatar(null); // Clear selected avatar if uploading image
     }
   };
 
+  // Drag & Drop handlers
   const handleDrop = (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(file);
       setImage(file);
-      setPreviewURL(URL.createObjectURL(file));
-      setError("");
+      setPreviewURL(url);
       setSelectedAvatar(null);
+      setShowCrop(true);
+      setError("");
     } else {
       setError("Please drop a valid image file.");
     }
   };
-
   const handleDragOver = (e) => e.preventDefault();
 
+  // Clear current image selection
   const clearImage = () => {
     setImage(null);
     setPreviewURL(null);
     setSelectedAvatar(null);
     inputRef.current.value = null;
+    setError("");
   };
 
+  // Select from predefined avatars
   const selectAvatar = (url) => {
     setSelectedAvatar(url);
     setImage(null);
@@ -75,22 +99,47 @@ const ProfileModal = ({ isOpen, onClose, onProfileUploaded }) => {
     setError("");
   };
 
+  // Cropper callbacks
+  const onCropComplete = useCallback((_, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  // Perform cropping and update preview and file
+  const cropAndSetImage = async () => {
+    try {
+      const croppedBlob = await getCroppedImg(previewURL, croppedAreaPixels);
+      const croppedURL = URL.createObjectURL(croppedBlob);
+      const croppedFile = new File([croppedBlob], "cropped-image.jpg", {
+        type: "image/jpeg",
+      });
+      setImage(croppedFile);
+      setPreviewURL(croppedURL);
+      setShowCrop(false);
+      setSelectedAvatar(null);
+      setError("");
+    } catch (err) {
+      console.error("Cropping failed:", err);
+      setError("Cropping failed. Please try again.");
+    }
+  };
+
+  // Upload image or avatar to Cloudinary and update backend
   const uploadProfilePhoto = async () => {
     if (!image && !selectedAvatar) {
-      setError("Please select an image or an avatar.");
+      setError("Please select an image or avatar before saving.");
       return;
     }
 
     setUploading(true);
-
+    setError("");
     try {
       let profileUrl;
 
       if (selectedAvatar) {
-        
+        // If user chose a predefined avatar, no upload needed
         profileUrl = selectedAvatar;
       } else {
-        
+        // Upload cropped or original image file to Cloudinary
         const formData = new FormData();
         formData.append("file", image);
         formData.append("upload_preset", PRESET);
@@ -105,11 +154,15 @@ const ProfileModal = ({ isOpen, onClose, onProfileUploaded }) => {
         );
 
         const data = await cloudinaryRes.json();
+        if (!cloudinaryRes.ok) {
+          throw new Error(data.error?.message || "Upload failed");
+        }
         profileUrl = data.secure_url;
       }
 
+      // Update user profile on your backend
       const token = localStorage.getItem("token");
-      await fetch(`${BASE_URL}/auth/update-profile`, {
+      const updateRes = await fetch(`${BASE_URL}/auth/update-profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -118,17 +171,22 @@ const ProfileModal = ({ isOpen, onClose, onProfileUploaded }) => {
         body: JSON.stringify({ profileUrl }),
       });
 
+      if (!updateRes.ok) {
+        const errData = await updateRes.json();
+        throw new Error(errData.message || "Profile update failed");
+      }
+
       onProfileUploaded(profileUrl);
       alert("Profile photo updated!");
       onClose();
     } catch (err) {
-      console.error("Upload failed:", err);
-      setError("Upload failed. Try again.");
+      console.error("Upload error:", err);
+      setError(err.message || "Upload failed. Try again.");
     }
-
     setUploading(false);
   };
 
+  // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
@@ -140,101 +198,144 @@ const ProfileModal = ({ isOpen, onClose, onProfileUploaded }) => {
   if (!isOpen) return null;
 
   return (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50"
-    onDrop={handleDrop}
-    onDragOver={handleDragOver}
-  >
-    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 p-6 relative animate-fade-in overflow-y-auto max-h-[90vh]">
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 text-gray-500 hover:text-black"
-      >
-        <X size={22} />
-      </button>
-
-      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-        Upload or Select Your Profile Photo
-      </h2>
-
-      {/* Preview Circle */}
-      <div className="flex flex-col items-center space-y-4">
-        <div
-          className="relative w-32 h-32 rounded-full border-4 border-dashed hover:border-blue-400 cursor-pointer overflow-hidden shadow-md"
-          onClick={() => inputRef.current.click()}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50"
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
+      <div className="bg-white p-6 rounded-xl shadow-2xl max-w-lg w-full space-y-4 relative">
+        <button
+          className="absolute top-4 right-4 text-gray-600 hover:text-black"
+          onClick={onClose}
+          aria-label="Close"
         >
-          {previewURL ? (
+          <X size={24} />
+        </button>
+
+        <h2 className="text-lg font-bold text-center text-gray-800">
+          Update Profile Photo
+        </h2>
+
+        {/* Predefined Avatars */}
+        <div className="flex flex-wrap gap-4 justify-center max-h-36 overflow-y-auto mb-4">
+          {diceBearAvatars.map((avatar) => (
             <img
-              src={previewURL}
-              alt="Preview"
-              className="w-full h-full object-cover hover:opacity-90 transition"
+              key={avatar}
+              src={avatar}
+              alt="avatar"
+              onClick={() => selectAvatar(avatar)}
+              className={`w-12 h-12 rounded-full cursor-pointer border-2 ${
+                selectedAvatar === avatar ? "border-blue-500" : "border-transparent"
+              } hover:border-blue-300`}
             />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-              <ImagePlus size={32} />
-            </div>
-          )}
+          ))}
         </div>
 
+        {/* Drag & Drop + File Input */}
+        <label
+          htmlFor="fileInput"
+          className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-blue-400 transition"
+          aria-label="Upload new profile photo"
+        >
+          <UploadCloud size={36} className="text-gray-400 mb-2" />
+          <span className="text-sm text-gray-500">Drag & drop an image or click to select</span>
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/*"
+            ref={inputRef}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </label>
+
+        {/* Show preview and cropping */}
         {previewURL && (
-          <button
-            onClick={clearImage}
-            className="text-sm text-red-500 hover:underline flex items-center gap-1"
-          >
-            <Trash2 size={16} /> Remove Image
-          </button>
+          <div className="relative mt-4 w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+            {showCrop ? (
+              <>
+                <Cropper
+                  image={previewURL}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
+                  cropShape="round"
+                  showGrid={false}
+                />
+                <div className="absolute bottom-4 left-0 right-0 px-8 flex items-center gap-4">
+                  <Slider
+                    value={zoom}
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    onChange={(_, val) => setZoom(val)}
+                    aria-label="Zoom"
+                  />
+                  <button
+                    onClick={cropAndSetImage}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                  >
+                    Crop
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowCrop(false);
+                      setPreviewURL(null);
+                      setImage(null);
+                      inputRef.current.value = null;
+                    }}
+                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <img
+                  src={previewURL}
+                  alt="Profile Preview"
+                  className="object-cover w-full h-full rounded-full"
+                />
+                <button
+                  onClick={() => setShowCrop(true)}
+                  className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-1 hover:bg-opacity-100 transition"
+                  aria-label="Edit crop"
+                >
+                  <ImagePlus size={20} />
+                </button>
+                <button
+                  onClick={clearImage}
+                  className="absolute top-2 left-2 bg-white bg-opacity-80 rounded-full p-1 hover:bg-opacity-100 transition"
+                  aria-label="Remove image"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </>
+            )}
+          </div>
         )}
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          ref={inputRef}
-          className="hidden"
-        />
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-600 text-center font-semibold">{error}</p>
+        )}
 
         <button
           onClick={uploadProfilePhoto}
           disabled={uploading}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full disabled:opacity-50 transition"
+          className={`w-full py-3 rounded-lg text-white font-semibold transition ${
+            uploading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+          }`}
+          aria-label="Save profile photo"
         >
-          <UploadCloud size={18} />
-          {uploading ? "Uploading..." : "Upload"}
+          {uploading ? "Uploading..." : "Save"}
         </button>
       </div>
-
-      {/* Divider */}
-      <div className="my-6 border-t border-gray-200" />
-
-      {/* Avatar Grid */}
-      <h3 className="text-lg font-semibold text-center text-gray-700 mb-4">
-        Or Choose a Predefined Avatar
-      </h3>
-      <div className="grid grid-cols-4 sm:grid-cols-5 gap-4 justify-items-center">
-        {diceBearAvatars.map((avatar) => (
-          <img
-            key={avatar}
-            src={avatar}
-            alt="DiceBear avatar"
-            className={`w-16 h-16 rounded-full cursor-pointer transition-all duration-200 border-4 ${
-              selectedAvatar === avatar
-                ? "border-blue-600 shadow-lg scale-110"
-                : "border-transparent hover:scale-105 hover:border-blue-300"
-            }`}
-            onClick={() => selectAvatar(avatar)}
-          />
-        ))}
-      </div>
-
-      <p className="text-xs text-center text-gray-400 mt-6">
-        Drag & drop an image, click the circle to upload, or select an avatar.
-      </p>
     </div>
-  </div>
-);
-
+  );
 };
 
 export default ProfileModal;
