@@ -74,9 +74,8 @@ app.use((error, req, res, next) => {
 // Connect to Database & Start Server
 connectDb().then(() => {
   const PORT = process.env.PORT || 5000;
-  const HOST = '0.0.0.0'; // <-- This allows external devices to connect
 
-  server.listen(PORT, HOST, () => {
-    console.log(`🚀 Server is running at http://${HOST}:${PORT}`);
+  server.listen(PORT, () => {
+    console.log(`🚀 Server is running at port:${PORT}`);
   });
 });
