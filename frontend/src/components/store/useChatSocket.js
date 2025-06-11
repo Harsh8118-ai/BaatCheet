@@ -69,7 +69,6 @@ const useChatSocket = ({
           ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         } else {
           // New chat - add to top
-          console.log(msg);
           return [
             {
               _id: msg._id,
@@ -136,6 +135,16 @@ const useChatSocket = ({
             : msg
         )
       );
+
+      if (setChats) {
+    setChats(prevChats =>
+      prevChats.map(chat =>
+        chat._id === updatedMessage._id
+          ? { ...chat, status: updatedMessage.status }
+          : chat
+      )
+    );
+  }
     });
 
     return () => {
