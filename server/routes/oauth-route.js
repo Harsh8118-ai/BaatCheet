@@ -20,7 +20,7 @@ router.get("/github", passport.authenticate("github", { scope: ["user:email"] })
 
 router.get(
   "/github/callback",
-  passport.authenticate("github", { failureRedirect: "/login" }),
+  passport.authenticate("github", { session: false, failureRedirect: "/login" }),
   (req, res) => {
     if (!req.user) {
       return res.redirect(`${CLIENT_URL}?error=Authentication Failed`);
@@ -35,7 +35,7 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+  passport.authenticate("google", { session: false, failureRedirect: "/login" }),
   (req, res) => {
     console.log("✅ Callback reached! req.user:", req.user);
     if (!req.user) {
