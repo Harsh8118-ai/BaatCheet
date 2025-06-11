@@ -64,6 +64,8 @@ const oauthLogin = async (req, res) => {
 
     // 🔹 Generate and send token
     const token = generateToken(user);
+    console.log("controller token", token);
+    console.log("controller user", user.username);
     res.redirect(
       `${process.env.FRONTEND_URL}/oauth-success?token=${token}&username=${user.username}`
     );

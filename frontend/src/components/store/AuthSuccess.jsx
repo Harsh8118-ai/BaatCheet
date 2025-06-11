@@ -7,6 +7,7 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AuthSuccess = () => {
+  console.log("🟢 AuthSuccess component loaded");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
