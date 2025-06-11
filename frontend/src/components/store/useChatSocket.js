@@ -8,6 +8,7 @@ const useChatSocket = ({
   setIsTyping,
   setIsFriendOnline,
   setOnlineUserIds,
+  setChats,
 }) => {
   const typingTimeoutRef = useRef(null);
 
@@ -40,6 +41,51 @@ const useChatSocket = ({
 
     socket.on('messageReceived', (msg) => {
       setMessages(prev => [...prev, msg]);
+      
+      if (setChats) {
+      setChats(prev => {
+        const existingChat = prev.find(c =>
+          (c.senderId === msg.senderId && c.receiverId === userId) ||
+          (c.receiverId === msg.senderId && c.senderId === userId)
+        );
+
+        // If chat already exists, update the latest message and time
+        if (existingChat) {
+          return [
+            {
+              ...existingChat,
+              message: msg.message,
+              createdAt: msg.createdAt,
+              senderId: msg.senderId,
+              receiverId: msg.receiverId,
+              status: msg.status
+            },
+            ...prev.filter(c =>
+              !(
+                (c.senderId === msg.senderId && c.receiverId === userId) ||
+                (c.receiverId === msg.senderId && c.senderId === userId)
+              )
+            )
+          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else {
+          // New chat - add to top
+          return [
+            {
+              _id: msg._id,
+              senderId: msg.senderId,
+              receiverId: msg.receiverId,
+              username: msg.senderName || 'New User',
+              profileUrl: msg.profileUrl || '',
+              message: msg.message,
+              createdAt: msg.createdAt,
+              unreadCount: 1,
+              status: msg.status
+            },
+            ...prev
+          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+      });
+    }
     });
 
     socket.on('typing', ({ senderId }) => {

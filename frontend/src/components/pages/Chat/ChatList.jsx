@@ -20,6 +20,7 @@ const ChatList = () => {
         setIsTyping: () => { },
         setIsFriendOnline: () => { },
         setOnlineUserIds,
+        setChats,
     });
 
     useEffect(() => {
