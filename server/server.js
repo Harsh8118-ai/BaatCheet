@@ -38,19 +38,20 @@ app.use(cors({ origin: allowedOrigins, methods: "GET, POST, PUT, DELETE", creden
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", 1);  
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "default_secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    },
-  })
-);
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET || "default_secret",
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       secure: true,
+//       sameSite: "none",
+//       httpOnly: true,
+//     },
+//   })
+// );
+// app.use(passport.session());
 app.use(passport.initialize());
-app.use(passport.session());
 
 // API Routes
 app.use("/api/auth", authRoute);

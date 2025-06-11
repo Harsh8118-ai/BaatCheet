@@ -86,17 +86,17 @@ passport.use(
   )
 );
 
-passport.serializeUser((user, done) => {
-  console.log("→ serializeUser:", user.id);
-  done(null, user.id);
-});
+// passport.serializeUser((user, done) => {
+//   console.log("→ serializeUser:", user.id);
+//   done(null, user.id);
+// });
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    console.log("→ deserializeUser:", id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
+// passport.deserializeUser(async (id, done) => {
+//   try {
+//     const user = await User.findById(id);
+//     console.log("→ deserializeUser:", id);
+//     done(null, user);
+//   } catch (error) {
+//     done(error, null);
+//   }
+// });
