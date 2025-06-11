@@ -18,6 +18,7 @@ const AuthSuccess = () => {
 
     if (token) {
       try {
+        console.log(token)
         localStorage.setItem("token", token);
         const decoded = jwtDecode(token);
         const userId = decoded.id;
