@@ -37,11 +37,16 @@ app.use(compression());
 app.use(cors({ origin: allowedOrigins, methods: "GET, POST, PUT, DELETE", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.set("trust proxy", 1);  
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "default_secret",
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    },
   })
 );
 app.use(passport.initialize());
