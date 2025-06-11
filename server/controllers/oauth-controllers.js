@@ -67,7 +67,7 @@ const oauthLogin = async (req, res) => {
     console.log("controller token", token);
     console.log("controller user", user.username);
     res.redirect(
-      `${process.env.FRONTEND_URL}/oauth-success?token=${token}&username=${user.username}`
+      `${process.env.FRONTEND_URL}/auth-success?token=${token}&username=${user.username}`
     );
   } catch (error) {
     console.error("OAuth Login Error:", error);

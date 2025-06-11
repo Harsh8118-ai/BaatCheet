@@ -26,7 +26,7 @@ router.get(
       return res.redirect(`${CLIENT_URL}?error=Authentication Failed`);
     }
     const token = generateToken(req.user);
-    res.redirect(`${process.env.FRONTEND_URL}/oauth-success?token=${token}&username=${req.user.username}`);
+    res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${token}&username=${req.user.username}`);
   }
 );
 
@@ -43,7 +43,7 @@ router.get(
     }
     const token = generateToken(req.user);
     console.log(token);
-    res.redirect(`${process.env.FRONTEND_URL}/oauth-success?token=${token}&username=${req.user.username}`);
+    res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${token}&username=${req.user.username}`);
   }
 );
 
