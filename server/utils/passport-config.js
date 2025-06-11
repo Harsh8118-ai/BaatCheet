@@ -19,6 +19,7 @@ passport.use(
           user = new User({
             username: profile.displayName,
             email: profile.emails[0].value,
+            authProvider: "google",
           });
           await user.save();
         }
@@ -63,6 +64,7 @@ passport.use(
           user = new User({
             username: profile.username || "GitHub User",
             email,
+            authProvider: "github",
           });
           await user.save();
         }
