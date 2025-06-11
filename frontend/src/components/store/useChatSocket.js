@@ -41,7 +41,7 @@ const useChatSocket = ({
 
     socket.on('messageReceived', (msg) => {
       setMessages(prev => [...prev, msg]);
-      
+
       if (setChats) {
       setChats(prev => {
         const existingChat = prev.find(c =>
@@ -69,12 +69,13 @@ const useChatSocket = ({
           ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         } else {
           // New chat - add to top
+          console.log(msg);
           return [
             {
               _id: msg._id,
               senderId: msg.senderId,
               receiverId: msg.receiverId,
-              username: msg.senderName || 'New User',
+              username: msg.username || 'New User',
               profileUrl: msg.profileUrl || '',
               message: msg.message,
               createdAt: msg.createdAt,

@@ -34,17 +34,17 @@ const initializeSocket = (io) => {
       const { senderId, receiverId, tempId, file } = data;
       const conversationId = [senderId, receiverId].sort().join("_");
       data.conversationId = conversationId;
-    
+
       try {
         // 🔍 Fetch the sender's mood
         const sender = await User.findById(senderId).select("currentMood");
         const mood = sender?.currentMood || "default";
         data.mood = mood;
-        
+
         if (file) {
           let fileUrl = '';
           const fileBuffer = Buffer.from(file, 'base64');
-    
+
           const uploadStream = cloudinary.uploader.upload_stream(
             { resource_type: 'auto' },
             async (error, result) => {
@@ -52,37 +52,51 @@ const initializeSocket = (io) => {
                 console.error('Error uploading to Cloudinary:', error);
                 return;
               }
-    
+
               fileUrl = result.secure_url;
-    
+
               const message = new Message({ ...data, fileUrl, status: "sent" });
               await message.save();
-    
-              io.to(receiverId).emit("messageReceived", { ...message.toObject(), status: "delivered" });
+
+              const senderInfo = await User.findById(senderId).select("username profileUrl");
+
+              io.to(receiverId).emit("messageReceived", {
+                ...message.toObject(),
+                username: senderInfo?.username || "New User",
+                profileUrl: senderInfo?.profileUrl || "",
+                status: "delivered",
+              });
               io.to(senderId).emit("messageDelivered", { messageId: message._id, tempId });
               await Message.findByIdAndUpdate(message._id, { status: "delivered" });
-    
+
               console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId} with file`);
             }
           );
-    
+
           streamifier.createReadStream(fileBuffer).pipe(uploadStream);
         } else {
           // No file, just save the message with mood
           const message = new Message({ ...data, status: "sent" });
           await message.save();
-    
-          io.to(receiverId).emit("messageReceived", { ...message.toObject(), status: "delivered" });
+
+          const senderInfo = await User.findById(senderId).select("username profileUrl");
+
+          io.to(receiverId).emit("messageReceived", {
+            ...message.toObject(),
+            username: senderInfo?.username || "New User",
+            profileUrl: senderInfo?.profileUrl || "",
+            status: "delivered",
+          });
           io.to(senderId).emit("messageDelivered", { messageId: message._id, tempId });
           await Message.findByIdAndUpdate(message._id, { status: "delivered" });
-    
+
           console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId}`);
         }
       } catch (err) {
         console.error("Error in sendMessage:", err);
       }
     });
-    
+
 
     // Seen Status - FIXED
     socket.on("markAsSeen", async ({ userId, contactId }) => {
