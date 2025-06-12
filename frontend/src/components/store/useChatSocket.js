@@ -23,12 +23,12 @@ const useChatSocket = ({
 
     socket.on('userOnline', (id) => {
       if (id === receiverId) setIsFriendOnline(true);
-      setOnlineUserIds?.(prev => [...new Set([...(prev || []), id])]); 
+      setOnlineUserIds?.(prev => [...new Set([...(prev || []), id])]);
     });
 
     socket.on('userOffline', (id) => {
       if (id === receiverId) setIsFriendOnline(false);
-      setOnlineUserIds?.(prev => (prev || []).filter(uid => uid !== id)); 
+      setOnlineUserIds?.(prev => (prev || []).filter(uid => uid !== id));
     });
 
     socket.on('messageDelivered', ({ messageId, tempId }) => {
@@ -43,49 +43,51 @@ const useChatSocket = ({
       setMessages(prev => [...prev, msg]);
 
       if (setChats) {
-      setChats(prev => {
-        const existingChat = prev.find(c =>
-          (c.senderId === msg.senderId && c.receiverId === userId) ||
-          (c.receiverId === msg.senderId && c.senderId === userId)
-        );
+        setChats(prev => {
+          const existingChat = prev.find(c =>
+            (c.senderId === msg.senderId && c.receiverId === userId) ||
+            (c.receiverId === msg.senderId && c.senderId === userId)
+          );
 
-        // If chat already exists, update the latest message and time
-        if (existingChat) {
-          return [
-            {
-              ...existingChat,
-              message: msg.message,
-              createdAt: msg.createdAt,
-              senderId: msg.senderId,
-              receiverId: msg.receiverId,
-              status: msg.status
-            },
-            ...prev.filter(c =>
-              !(
-                (c.senderId === msg.senderId && c.receiverId === userId) ||
-                (c.receiverId === msg.senderId && c.senderId === userId)
+
+          if (existingChat) {
+            const isIncoming = msg.senderId !== userId;
+            return [
+              {
+                ...existingChat,
+                message: msg.message,
+                createdAt: msg.createdAt,
+                senderId: msg.senderId,
+                receiverId: msg.receiverId,
+                status: msg.status,
+                unreadCount: isIncoming ? (existingChat.unreadCount || 0) + 1 : existingChat.unreadCount
+              },
+              ...prev.filter(c =>
+                !(
+                  (c.senderId === msg.senderId && c.receiverId === userId) ||
+                  (c.receiverId === msg.senderId && c.senderId === userId)
+                )
               )
-            )
-          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        } else {
-          // New chat - add to top
-          return [
-            {
-              _id: msg._id,
-              senderId: msg.senderId,
-              receiverId: msg.receiverId,
-              username: msg.username || 'New User',
-              profileUrl: msg.profileUrl || '',
-              message: msg.message,
-              createdAt: msg.createdAt,
-              unreadCount: 1,
-              status: msg.status
-            },
-            ...prev
-          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        }
-      });
-    }
+            ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          } else {
+
+            return [
+              {
+                _id: msg._id,
+                senderId: msg.senderId,
+                receiverId: msg.receiverId,
+                username: msg.username || 'New User',
+                profileUrl: msg.profileUrl || '',
+                message: msg.message,
+                createdAt: msg.createdAt,
+                unreadCount: 1,
+                status: msg.status
+              },
+              ...prev
+            ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          }
+        });
+      }
     });
 
     socket.on('typing', ({ senderId }) => {
@@ -137,14 +139,14 @@ const useChatSocket = ({
       );
 
       if (setChats) {
-    setChats(prevChats =>
-      prevChats.map(chat =>
-        chat._id === updatedMessage._id
-          ? { ...chat, status: updatedMessage.status }
-          : chat
-      )
-    );
-  }
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat._id === updatedMessage._id
+              ? { ...chat, status: updatedMessage.status }
+              : chat
+          )
+        );
+      }
     });
 
     return () => {

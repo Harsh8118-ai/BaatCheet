@@ -5,18 +5,23 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ChatList from "./components/pages/Chat/ChatList";
 import { moodThemes } from "./components/store/theme";
-
+import { toast } from "react-toastify";
+import { UserMinus } from "lucide-react";
+import { Send } from "lucide-react";
 
 const Home = () => {
     const [searchActive, setSearchActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [friends, setFriends] = useState([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [frienddropdownOpen, setFriendDropdownOpen] = useState(null);
     const inputRef = useRef(null);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
     const [userMood, setUserMood] = useState("default");
     const mood = userMood;
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    const dropdownRef = useRef();
 
 
 
@@ -71,15 +76,50 @@ const Home = () => {
         }
     }, [searchActive]);
 
-   // ✉️ Navigate to Chat Function
-  const handleMessage = (friendId, friendUsername, friendProfileUrl) => {
-  navigate(`/chat/${friendId}`, {
-    state: {
-      friendUsername,
-      friendProfileUrl
-    }
-  });
-};
+    // ✉️ Navigate to Chat Function
+    const handleMessage = (friendId, friendUsername, friendProfileUrl) => {
+        navigate(`/chat/${friendId}`, {
+            state: {
+                friendUsername,
+                friendProfileUrl
+            }
+        });
+    };
+
+    // 🗑 Remove Friend Function
+    const handleRemoveFriend = async (friendId) => {
+        if (!window.confirm("Are you sure you want to remove this friend?")) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            await axios.post(
+                `${BASE_URL}/friends/remove-friend`,
+                { _id: friendId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setFriends((prev) => prev.filter((friend) => friend._id !== friendId));
+            toast.success("Friend removed successfully!");
+            setFriendDropdownOpen(null);
+        } catch (error) {
+            setError("Error removing friend.");
+            toast.error("Error removing friend.");
+        }
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setFriendDropdownOpen(null);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
 
 
 
@@ -163,13 +203,13 @@ const Home = () => {
 
             {/* Horizontal Scroll Section */}
             <div className="flex gap-4 overflow-x-auto pb-2" >
-                <div className="flex flex-col items-center text-sm text-gray-700">
+                <div className="flex flex-col items-center text-sm text-gray-700 ml-1">
                     <FindUser />
                 </div>
 
                 {(searchActive ? filteredFriends : friends).map((friend, idx) => (
-                    <div key={idx} className="relative flex flex-col items-center text-sm text-gray-700" onClick={() => handleMessage(friend._id, friend.username, friend.profileUrl)}>
-                        <div className="relative">
+                    <div key={idx} className="relative flex flex-col items-center text-sm text-gray-700">
+                        <div className="relative" onClick={() => handleMessage(friend._id, friend.username, friend.profileUrl)}>
                             {friend.profileUrl ? (
                                 <img
                                     src={friend.profileUrl}
@@ -181,8 +221,49 @@ const Home = () => {
                                     <span className="text-base">{friend.username?.slice(0, 2).toUpperCase()}</span>
                                 </div>
                             )}
-                            <MoreVertical className="absolute top-0 -right-2 w-4 h-4 text-gray-600" />
                         </div>
+
+                        {/* More Options Button */}
+                        <MoreVertical
+                            className="absolute top-0 -right-2 w-4 h-4 text-gray-600 cursor-pointer"
+                            onClick={() =>
+                                setFriendDropdownOpen(frienddropdownOpen === friend._id ? null : friend._id)
+                            }
+                        />
+
+                        {frienddropdownOpen === friend._id && (
+                            <div
+                                ref={dropdownRef}
+                                className="absolute right-0 mt-2  bg-white border rounded-lg shadow-xl z-50 text-sm"
+                            >
+                                <button
+                                    className="w-full flex items-center  px-2 py-1 text-gray-700 hover:bg-gray-100"
+                                    onClick={() => handleMessage(friend._id, friend.username, friend.profileUrl)}
+                                >
+                                    <Send className="text-purple-600 w-4 h-4" />
+                                    
+                                </button>
+
+                                <button
+                                    className="w-full flex items-center  px-2 py-1 text-red-600 hover:bg-red-50"
+                                    onClick={() => handleRemoveFriend(friend._id)}
+                                >
+                                    <UserMinus className="text-red-600 w-4 h-4" />
+                                    
+                                </button>
+
+                                <button
+                                    className="w-full flex items-center  px-2 py-1 text-gray-500 hover:bg-gray-50"
+                                    onClick={() => setFriendDropdownOpen(null)}
+                                >
+                                    <X className="w-4 h-4" />
+                                    
+                                </button>
+                            </div>
+                        )}
+
+
+
 
                         <span className="text-gray-900 font-bold text-sm">{friend.username}</span>
                     </div>
