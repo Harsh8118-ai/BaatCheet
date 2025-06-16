@@ -7,7 +7,7 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AuthSuccess = () => {
-  console.log("🟢 AuthSuccess component loaded");
+  ("🟢 AuthSuccess component loaded");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -19,7 +19,7 @@ const AuthSuccess = () => {
 
     if (token) {
       try {
-        console.log(token)
+        
         localStorage.setItem("token", token);
         const decoded = jwtDecode(token);
         const userId = decoded.id;
@@ -72,7 +72,7 @@ const AuthSuccess = () => {
         }}
         userId={user?.id}
         onProfileUploaded={(url) => {
-          console.log("✅ Profile photo uploaded:", url);
+          
           navigate("/home");
         }}
       />

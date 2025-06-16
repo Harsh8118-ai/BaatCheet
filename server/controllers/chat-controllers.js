@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 // 📩 Send Message & Save in DB
 const sendMessage = async (req, res) => {
-  console.log("🔥 sendMessage controller hit");
+  
   try {
     const {
       senderId,
@@ -55,7 +55,7 @@ const sendMessage = async (req, res) => {
       emojiSoundUrl, // 🔥 Only for emoji messages
     });
 
-    console.log(newMessage);
+    
     await newMessage.save();
     res.status(201).json(newMessage);
   } catch (error) {

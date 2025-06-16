@@ -60,12 +60,8 @@ const oauthLogin = async (req, res) => {
       await user.save();
     }
 
-    console.log("User Auth Provider:", user.authProvider);
-
     // 🔹 Generate and send token
     const token = generateToken(user);
-    console.log("controller token", token);
-    console.log("controller user", user.username);
     res.redirect(
       `${process.env.FRONTEND_URL}/auth-success?token=${token}&username=${user.username}`
     );

@@ -44,7 +44,7 @@ passport.use(
 );
 
 passport.use(
-  new GitHubStrategy(
+  new GitHubStrategy( 
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -88,17 +88,3 @@ passport.use(
   )
 );
 
-// passport.serializeUser((user, done) => {
-//   console.log("→ serializeUser:", user.id);
-//   done(null, user.id);
-// });
-
-// passport.deserializeUser(async (id, done) => {
-//   try {
-//     const user = await User.findById(id);
-//     console.log("→ deserializeUser:", id);
-//     done(null, user);
-//   } catch (error) {
-//     done(error, null);
-//   }
-// });

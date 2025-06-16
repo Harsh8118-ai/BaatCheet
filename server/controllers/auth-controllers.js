@@ -22,7 +22,7 @@ const home = async (req, res) => {
 // **User Registration (Manual Signup)**
 const register = async (req, res, next) => {
   try {
-    console.log("📩 Received Request Body:", JSON.stringify(req.body, null, 2));
+  
 
 
     const { username, email, mobileNumber, password, otp } = req.body;
@@ -33,11 +33,7 @@ const register = async (req, res, next) => {
 
     // Check if OTP is valid
     const otpRecord = await OTP.findOne({ email: email.toLowerCase() });
-    console.log("🔍 OTP Found in DB:", otpRecord);
-
-
-    console.log("DB OTP:", otpRecord?.otp);
-    console.log("User OTP:", otp);
+ 
 
 
     if (!otpRecord || otpRecord.otp.toString() !== otp.toString()) {
@@ -85,18 +81,17 @@ const login = async (req, res, next) => {
     // Fix: Ensure password is selected
     const user = await User.findOne({ mobileNumber }).select("+password");
     if (!user) {
-      console.log("⚠️ User not found:", mobileNumber);
+      
       return res.status(400).json({ message: "Invalid Mobile Number or Password" });
     }
 
     // Fix: Password comparison
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      console.log("❌ Incorrect password for user:", mobileNumber);
+      
       return res.status(400).json({ message: "Invalid Mobile Number or Password" });
     }
 
-    console.log("✅ Login successful for user:", mobileNumber);
 
     const token = generateToken(user._id);
 

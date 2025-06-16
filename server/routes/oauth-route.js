@@ -37,12 +37,10 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { session: false, failureRedirect: "/login" }),
   (req, res) => {
-    console.log("✅ Callback reached! req.user:", req.user);
     if (!req.user) {
       return res.redirect(`${CLIENT_URL}?error=Authentication Failed`);
     }
     const token = generateToken(req.user);
-    console.log(token);
     res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${token}&username=${req.user.username}`);
   }
 );

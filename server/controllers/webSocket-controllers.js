@@ -8,7 +8,6 @@ const onlineUsers = new Map();
 
 const initializeSocket = (io) => {
   io.on("connection", (socket) => {
-    console.log("👤 New user connected:", socket.id);
 
     // Join room & track user
     socket.on("join", (userId) => {
@@ -21,7 +20,7 @@ const initializeSocket = (io) => {
       const allOnline = Array.from(onlineUsers.keys());
       socket.emit("onlineUsers", allOnline);
 
-      console.log(`📌 User ${userId} joined room: ${userId}`);
+      
     });
 
     // Typing
@@ -69,7 +68,7 @@ const initializeSocket = (io) => {
               io.to(senderId).emit("messageDelivered", { messageId: message._id, tempId });
               await Message.findByIdAndUpdate(message._id, { status: "delivered" });
 
-              console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId} with file`);
+              
             }
           );
 
@@ -90,7 +89,7 @@ const initializeSocket = (io) => {
           io.to(senderId).emit("messageDelivered", { messageId: message._id, tempId });
           await Message.findByIdAndUpdate(message._id, { status: "delivered" });
 
-          console.log(`📤 Message ${message._id} from ${senderId} to ${receiverId}`);
+          
         }
       } catch (err) {
         console.error("Error in sendMessage:", err);
@@ -108,7 +107,7 @@ const initializeSocket = (io) => {
         });
 
         if (updatedMessages.length > 0) {
-          console.log(`Found ${updatedMessages.length} messages to mark as read`);
+          
 
           const messageIds = updatedMessages.map(msg => msg._id);
 
@@ -126,7 +125,7 @@ const initializeSocket = (io) => {
 
           io.to(contactId).emit("messagesSeen", { by: userId });
 
-          console.log(`👁️ ${messageIds.length} messages from ${contactId} seen by ${userId}`);
+          
         }
       } catch (error) {
         console.error("Error marking messages as seen:", error);
@@ -136,7 +135,7 @@ const initializeSocket = (io) => {
     // Reactions
     socket.on("reactMessage", ({ messageId, type, userId }) => {
       io.emit("messageReaction", { messageId, type, userId });
-      console.log(`💬 Reaction on message ${messageId} by ${userId}: ${type}`);
+      
     });
 
     // Handle Disconnect
@@ -145,7 +144,7 @@ const initializeSocket = (io) => {
       if (userId) {
         onlineUsers.delete(userId);
         socket.broadcast.emit("userOffline", userId);
-        console.log(`❌ User ${userId} disconnected`);
+        
       }
     });
   });
