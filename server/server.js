@@ -16,6 +16,7 @@ const friendRoute = require("./routes/friend-route");
 const messageRoute = require("./routes/chat-route");
 const otpRoutes = require("./routes/otp-route");
 const emojiRoutes = require("./routes/emoji-route");
+const instagramRoutes = require("./routes/instagram-route");
 
 // Import WebSocket Controller
 const initializeSocket = require("./controllers/webSocket-controllers");
@@ -60,6 +61,8 @@ app.use("/api/friends", friendRoute);
 app.use("/api/chat", messageRoute);
 app.use("/api/otp", otpRoutes);
 app.use("/api/emoji", emojiRoutes);
+app.use("/api/instagram", instagramRoutes);
+
 
 // Initialize WebSocket
 initializeSocket(io);
