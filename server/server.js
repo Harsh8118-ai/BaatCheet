@@ -148,7 +148,7 @@ app.use((error, req, res, next) => {
 connectDb().then(() => {
   const PORT = process.env.PORT || 3000;
 
-  server.listen(PORT, () => {
+  server.listen(PORT, '127.0.0.1', () => {
     console.log(`🚀 Server is running at port:${PORT}`);
   });
 });
