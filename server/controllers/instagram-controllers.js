@@ -49,6 +49,24 @@ exports.saveInstagramUser = async (req, res) => {
     }
 };
 
+
+exports.getInstagramUser = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await InstagramUser.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("Error fetching Instagram user:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 exports.saveVisitorData = async (req, res) => {
     try {
         const ip = req.ip || req.headers["x-forwarded-for"]?.split(",")[0] || req.connection.remoteAddress;
