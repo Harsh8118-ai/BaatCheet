@@ -15,6 +15,14 @@ const InstagramUserSchema = new mongoose.Schema(
     source_ip: String,
     user_agent: String,
     last_fetched: { type: Date, default: Date.now },
+    visit_count: { type: Number, default: 0 },
+    visit_history: [
+      {
+        timestamp: { type: Date, default: Date.now },
+        ip: String,
+        user_agent: String,
+      },
+    ],
   },
   { timestamps: true }
 );
