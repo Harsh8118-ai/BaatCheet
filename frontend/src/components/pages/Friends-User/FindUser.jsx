@@ -116,11 +116,11 @@ const FindUser = () => {
           reset();
         }}
         className="flex flex-col items-center text-sm text-gray-700 dark:text-white">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-xl shadow-sm shadow-black">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-xl shadow-sm shadow-black/5 brightness-90">
           <UserPlus className="w-6 h-6 text-white" />
 
         </div>
-        <span className="text-gray-900 text-sm ">Add Friend</span>
+        <span className="text-gray-900 text-sm font-semibold">Add Friend</span>
       </button>
 
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">

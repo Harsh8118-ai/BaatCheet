@@ -6,6 +6,12 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      
+      fontFamily: {
+        sans: ['"Inter"', 'ui-sans-serif', 'system-ui'], // Default across app
+        custom: ['"Poppins"', 'sans-serif'],
+      },
+
       boxShadow: {
         "button-glow": "var(--button-shadow)", // Dynamic button shadow
       },

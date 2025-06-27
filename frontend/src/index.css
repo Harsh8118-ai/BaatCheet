@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
+    font-family: 'Poppins', sans-serif;
+
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
@@ -29,89 +33,84 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --primary-color: linear-gradient(to right, #3b82f6, #2563eb, #1e40af); /* Default Blue */
-  --primary-2-color: linear-gradient(to right, #60a5fa, #3b82f6, #2563eb);
-  --background-color: #f9fafb;
-  --text-color: #040509;
---button-shadow: 2px 2px 2px #1e40af, -2px -2px 4px #60a5fa;
+    --primary-color: linear-gradient(to right, #3b82f6, #2563eb, #1e40af);
+    --primary-2-color: linear-gradient(to right, #60a5fa, #3b82f6, #2563eb);
+    --background-color: #f9fafb;
+    --text-color: #040509;
+    --button-shadow: 2px 2px 2px #1e40af, -2px -2px 4px #60a5fa;
   }
 
-  
-/* 🌑 Dark Theme */
-[data-theme="dark"] {
-  --primary-color: linear-gradient(to right, #1f2937e0, #374151e0, #4b5563e3); /* 3-Color Gradient */
-  --primary-2-color: linear-gradient(to right, #232c3bb9, #2b3545ba, #3b4251ad);
-  --background-color: #fbfdff;
-  --text-color: #f9fafb;
---button-shadow: 2px 2px 4p2 #0c101ae8, -2px -2px 4px #2b3545e6;
-}
+  /* 🌑 Dark Theme */
+  [data-theme="dark"] {
+    --primary-color: linear-gradient(to right, #1f2937e0, #374151e0, #4b5563e3);
+    --primary-2-color: linear-gradient(to right, #232c3bb9, #2b3545ba, #3b4251ad);
+    --background-color: #fbfdff;
+    --text-color: #f9fafb;
+    --button-shadow: 2px 2px 4p2 #0c101ae8, -2px -2px 4px #2b3545e6;
+  }
 
-/* 🍃 Green Theme */
-[data-theme="green"] {
-  --primary-color: linear-gradient(to right, #10b981, #059669, #047857);
-  --primary-2-color: linear-gradient(to right, #12c887, #0f8a63, #086040);
-  --background-color: #ecfdf5;
-  --text-color: #065f46;
---button-shadow: 2px 2px 2px #086040, -2px -2px 4px #17e49a;
-}
+  /* 🍃 Green Theme */
+  [data-theme="green"] {
+    --primary-color: linear-gradient(to right, #10b981, #059669, #047857);
+    --primary-2-color: linear-gradient(to right, #12c887, #0f8a63, #086040);
+    --background-color: #ecfdf5;
+    --text-color: #065f46;
+    --button-shadow: 2px 2px 2px #086040, -2px -2px 4px #17e49a;
+  }
 
-/* 🔵 Blue Theme */
-[data-theme="blue"] {
-  --primary-color: linear-gradient(to right, #2563eb, #1d4ed8, #1e3a8a);
-  --primary-2-color: linear-gradient(to right, #2a6af3, #1c4ec9, #162f6d);
-  --background-color: #eff6ff;
-  --text-color: #1e40af;
---button-shadow: 2px 2px 2px #173b99, -2px -2px 4px #357cf7;
-}
+  /* 🔵 Blue Theme */
+  [data-theme="blue"] {
+    --primary-color: linear-gradient(to right, #2563eb, #1d4ed8, #1e3a8a);
+    --primary-2-color: linear-gradient(to right, #2a6af3, #1c4ec9, #162f6d);
+    --background-color: #eff6ff;
+    --text-color: #1e40af;
+    --button-shadow: 2px 2px 2px #173b99, -2px -2px 4px #357cf7;
+  }
 
-/* 🔥 Red Theme */
-[data-theme="red"] {
-  --primary-color: linear-gradient(to right, #f24f4f, #dc2626, #b91c1c);
-  --primary-2-color: linear-gradient(to right, #ff6b6b, #e63946, #b71c1c);
-  --background-color: #fee2e2;
-  --text-color: #7f1d1d;
---button-shadow: 2px 2px 2px #b71c1c, -2px -2px 4px #ff6b6b;
-}
+  /* 🔥 Red Theme */
+  [data-theme="red"] {
+    --primary-color: linear-gradient(to right, #f24f4f, #dc2626, #b91c1c);
+    --primary-2-color: linear-gradient(to right, #ff6b6b, #e63946, #b71c1c);
+    --background-color: #fee2e2;
+    --text-color: #7f1d1d;
+    --button-shadow: 2px 2px 2px #b71c1c, -2px -2px 4px #ff6b6b;
+  }
 
-/* 🔮 Purple Theme */
-[data-theme="purple"] {
-  --primary-color: linear-gradient(to right, #9b5de5, #7b1fa2, #4a148c);
-  --primary-2-color: linear-gradient(to right, #c084fc, #9d4edd, #6a0dad);
-  --background-color: #f3e8ff;
-  --text-color: #4a148c;
-  --button-shadow: 2px 2px 2px #6a0dad, -2px -2px 4px #c084fc;
-}
+  /* 🔮 Purple Theme */
+  [data-theme="purple"] {
+    --primary-color: linear-gradient(to right, #9b5de5, #7b1fa2, #4a148c);
+    --primary-2-color: linear-gradient(to right, #c084fc, #9d4edd, #6a0dad);
+    --background-color: #f3e8ff;
+    --text-color: #4a148c;
+    --button-shadow: 2px 2px 2px #6a0dad, -2px -2px 4px #c084fc;
+  }
 
-/* 🍊 Orange Theme */
-[data-theme="orange"] {
-  --primary-color: linear-gradient(to right, #ff9800, #f57c00, #e65100);
-  --primary-2-color: linear-gradient(to right, #ffb74d, #ff8f00, #e65100);
-  --background-color: #fff3e0;
-  --text-color: #e65100;
-  --button-shadow: 2px 2px 2px #e65100, -2px -2px 4px #ffb74d;
-}
+  /* 🍊 Orange Theme */
+  [data-theme="orange"] {
+    --primary-color: linear-gradient(to right, #ff9800, #f57c00, #e65100);
+    --primary-2-color: linear-gradient(to right, #ffb74d, #ff8f00, #e65100);
+    --background-color: #fff3e0;
+    --text-color: #e65100;
+    --button-shadow: 2px 2px 2px #e65100, -2px -2px 4px #ffb74d;
+  }
 
-/* 🌞 Yellow Theme */
-[data-theme="yellow"] {
-  --primary-color: linear-gradient(to right, #ffeb3b, #fbc02d, #f9a825);
-  --primary-2-color: linear-gradient(to right, #fff176, #ffeb3b, #f9a825);
-  --background-color: #fffde7;
-  --text-color: #f57f17;
-  --button-shadow: 2px 2px 2px #f9a825, -2px -2px 4px #fff176;
-}
+  /* 🌞 Yellow Theme */
+  [data-theme="yellow"] {
+    --primary-color: linear-gradient(to right, #ffeb3b, #fbc02d, #f9a825);
+    --primary-2-color: linear-gradient(to right, #fff176, #ffeb3b, #f9a825);
+    --background-color: #fffde7;
+    --text-color: #f57f17;
+    --button-shadow: 2px 2px 2px #f9a825, -2px -2px 4px #fff176;
+  }
 
-/* ⚫ Gray Theme */
-[data-theme="gray"] {
-  --primary-color: linear-gradient(to right, #9e9e9e, #757575, #424242);
-  --primary-2-color: linear-gradient(to right, #bdbdbd, #9e9e9e, #616161);
-  --background-color: #eeeeee;
-  --text-color: #424242;
-  --button-shadow: 2px 2px 2px #616161, -2px -2px 4px #bdbdbd;
-}
-
-
-
-
+  /* ⚫ Gray Theme */
+  [data-theme="gray"] {
+    --primary-color: linear-gradient(to right, #9e9e9e, #757575, #424242);
+    --primary-2-color: linear-gradient(to right, #bdbdbd, #9e9e9e, #616161);
+    --background-color: #eeeeee;
+    --text-color: #424242;
+    --button-shadow: 2px 2px 2px #616161, -2px -2px 4px #bdbdbd;
+  }
 }
 
 @layer base {
@@ -121,6 +120,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', sans-serif;
   }
 }
 

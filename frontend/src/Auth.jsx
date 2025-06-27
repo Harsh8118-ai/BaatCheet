@@ -8,11 +8,17 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-950 text-black font-sans px-4">
+    
       {/* Logo and Branding */}
       <div className="text-center mb-6 transition-all duration-300 ease-in-out">
-        <h1 className="text-3xl font-bold text-gray-200">Baat<span className="text-gray-200">Cheet</span></h1>
-        <p className="text-gray-500">Connect with friends instantly</p>
+        <div className="flex justify-center items-center space-x-3">
+          <img
+            src="https://res.cloudinary.com/dpnykjono/image/upload/v1751043740/ChatGPT_Image_Jun_26_2025_07_52_05_PM-Photoroom_rmi2vk.png" alt="BaatCheet Logo" className="w-16 h-w-16 sm:w-22 sm:h-22 object-contain" />
+          <h1 className="text-5xl sm:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-transparent bg-clip-text">Baat<span></span>Cheet</h1>
+        </div>
+        <p className="text-gray-500 mt-2 text-lg sm:text-base ">Connect with friends instantly</p>
       </div>
+
 
       {/* Tabs */}
       <div className="w-full max-w-md mb-4 transition-all duration-300 ease-in-out">

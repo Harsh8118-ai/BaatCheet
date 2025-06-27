@@ -127,11 +127,15 @@ const Home = () => {
     return (
         <div className={`${moodThemes[mood]?.bg} px-4 py-3 shadow-sm relative h-screen`}>
             {/* Top Bar */}
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-semibold text-purple-600 flex items-center gap-2">
-                    <span className="bg-purple-100 text-purple-600 p-1 rounded-full">💬</span>
-                    Baat-Cheet
-                </h1>
+            <div className="flex justify-between items-center mb-4 mt-2">
+               <div className="text-center transition-all duration-300 ease-in-out">
+        <div className="flex justify-center items-center space-x-1">
+          <img
+            src="https://res.cloudinary.com/dpnykjono/image/upload/v1751043740/ChatGPT_Image_Jun_26_2025_07_52_05_PM-Photoroom_rmi2vk.png" alt="BaatCheet Logo" className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-transparent bg-clip-text">Baat<span></span>Cheet</h1>
+        </div>
+       
+      </div>
 
                 <div className="flex items-center gap-4 text-gray-500 relative">
                     {/* Search Input */}
@@ -265,7 +269,7 @@ const Home = () => {
 
 
 
-                        <span className="text-gray-900 font-bold text-sm">{friend.username}</span>
+                        <span className="text-gray-900 font-bold text-sm">{friend.username?.slice(0,12)}</span>
                     </div>
                 ))}
             </div>

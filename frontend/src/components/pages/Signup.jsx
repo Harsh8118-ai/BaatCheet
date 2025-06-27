@@ -95,7 +95,7 @@ export default function Signup() {
     <>
     <motion.div
         className="bg-gray-950
- p-8 rounded-3xl shadow-md w-96 brightness-95 border border-gray-500"
+ p-8 rounded-3xl shadow-md w-full brightness-95 border border-gray-500  max-w-md "
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
