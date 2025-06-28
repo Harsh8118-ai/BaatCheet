@@ -9,7 +9,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-950 text-black font-sans px-4">
     
-      {/* Logo and Branding */}
+      {/* Logo and Branding */} 
       <div className="text-center mb-6 transition-all duration-300 ease-in-out">
         <div className="flex justify-center items-center space-x-3">
           <img

@@ -136,6 +136,7 @@ const Home = () => {
         </div>
        
       </div>
+      
 
                 <div className="flex items-center gap-4 text-gray-500 relative">
                     {/* Search Input */}

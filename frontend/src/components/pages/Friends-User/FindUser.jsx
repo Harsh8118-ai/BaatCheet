@@ -110,7 +110,7 @@ const FindUser = () => {
 
   return (
     <div>
-      <button
+      <button 
         onClick={() => {
           setIsModalOpen(true);
           reset();

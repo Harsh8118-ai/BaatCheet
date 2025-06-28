@@ -51,7 +51,7 @@ const MessageInput = ({
         </div>
       )}
 
-      {inputValue || file ? (
+      {inputValue || file ? ( 
         <button
           onClick={handleSendMessage}
           className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white hover:bg-purple-600 transition-colors"

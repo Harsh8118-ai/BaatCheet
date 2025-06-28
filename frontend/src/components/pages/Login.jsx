@@ -76,7 +76,7 @@
 
     return (
     <>
-    <motion.div
+    <motion.div 
           className="w-full max-w-md p-8 bg-gray-950 rounded-lg shadow-lg border border-gray-500"
           initial={{ y: 50 }}
           animate={{ y: 0 }}
