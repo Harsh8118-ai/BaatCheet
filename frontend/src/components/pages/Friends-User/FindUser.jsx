@@ -107,7 +107,7 @@ const FindUser = () => {
     setUser(null);
     setError("");
   };
-
+ 
   return (
     <div>
       <button 

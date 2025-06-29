@@ -81,7 +81,7 @@
           initial={{ y: 50 }}
           animate={{ y: 0 }}
           transition={{ duration: 0.5, type: "spring" }}
-        >
+        > 
 
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 

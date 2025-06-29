@@ -67,7 +67,7 @@ const MessageInput = ({
             setFile(audioFile);
           }}
         />
-      )}
+      )} 
     </div>
   </div>
 );

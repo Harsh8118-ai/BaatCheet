@@ -5,7 +5,7 @@ import Signup from './components/pages/Signup';
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState('login');
-
+ 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-950 text-black font-sans px-4">
     

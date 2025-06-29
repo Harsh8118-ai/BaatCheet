@@ -139,7 +139,7 @@ const RecievedRequests = () => {
                 className="bg-gray-950 rounded-xl shadow-sm border border-white/10 flex items-center justify-between px-2 py-3"
               >
                 {/* Left section: avatar + name */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4"> 
                   <div className="relative">
                     <div className="w-11 h-11 rounded-full overflow-hidden  flex items-center justify-center text-sm font-bold text-white">
                       {request.profileUrl ? (
