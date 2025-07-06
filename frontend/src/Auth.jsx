@@ -3,7 +3,7 @@ import Login from './components/pages/Login';
 import Signup from './components/pages/Signup';
 
 
-const Auth = () => { 
+const Auth = () => {
   const [activeTab, setActiveTab] = useState('login');
  
   return (
