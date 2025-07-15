@@ -23,5 +23,5 @@
     }],
   });
 
-  const Friend = mongoose.model("Friend", friendSchema);
-  module.exports = Friend;
+    const Friend = mongoose.model("Friend", friendSchema);
+    module.exports = Friend;

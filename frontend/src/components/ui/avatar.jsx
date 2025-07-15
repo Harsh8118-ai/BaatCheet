@@ -11,3 +11,4 @@ export function AvatarImage({ src, alt }) {
 export function AvatarFallback({ children }) {
     return <div className="h-full w-full flex items-center justify-center text-white bg-gray-600 rounded-full">{children}</div>;
 }
+ 
