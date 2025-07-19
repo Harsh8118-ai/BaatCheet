@@ -133,7 +133,7 @@ const Home = () => {
           <img
             src="https://res.cloudinary.com/dpnykjono/image/upload/v1751043740/ChatGPT_Image_Jun_26_2025_07_52_05_PM-Photoroom_rmi2vk.png" alt="BaatCheet Logo" className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-transparent bg-clip-text">Baat<span></span>Cheet</h1>
-        </div> 
+        </div>
        
       </div> 
       
