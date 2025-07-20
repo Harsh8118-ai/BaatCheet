@@ -135,7 +135,7 @@ const Home = () => {
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-transparent bg-clip-text">Baat<span></span>Cheet</h1>
         </div> 
        
-      </div> 
+      </div>  
       
 
                 <div className="flex items-center gap-4 text-gray-500 relative">
