@@ -112,7 +112,7 @@ export default function Signup() {
 
         {error && <p className="text-red-500 text-sm mb-3 text-center">{error}</p>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}> 
           <div className="flex flex-col space-y-3">
             <div className="flex flex-col">
               <label className="text-gray-200 text-sm mb-1">Username</label>
