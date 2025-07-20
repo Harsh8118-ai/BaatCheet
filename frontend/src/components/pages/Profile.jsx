@@ -24,7 +24,7 @@ const Profile = () => {
 
   const fetchUserData = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token"); 
       if (!token) return navigate("/");
 
       const response = await fetch(`${BASE_URL}/auth/user`, {
