@@ -13,7 +13,7 @@
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 
  
      
     const handleChange = (e) => {
