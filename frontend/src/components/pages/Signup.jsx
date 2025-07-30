@@ -106,7 +106,7 @@ export default function Signup() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
-          Create an Account 
+          Create an Account
         </motion.h2>
         
 
