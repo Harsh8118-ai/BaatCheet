@@ -102,7 +102,7 @@ export default function Signup() {
       >
         <motion.h2
           className="text-2xl font-bold mb-2 text-left text-gray-400"
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.8 }} 
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
