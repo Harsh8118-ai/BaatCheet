@@ -43,7 +43,7 @@ const ChatMessage = ({
         return <Check size={14} className="text-gray-400" />;
     }
   };
-
+ 
   const renderMessageContent = () => {
     switch (message.messageType) {
       case 'image':
