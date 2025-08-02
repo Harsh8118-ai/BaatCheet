@@ -138,7 +138,7 @@ const FindUser = () => {
         onClick={() => setIsModalOpen(false)}
         className="absolute top-2 right-2 bg-white/10 text-white hover:bg-white/20 rounded-full p-1.5 transition"
       >
-        <X size={20} />
+        <X size={20} /> 
       </button>
 
       {/* Title */}
