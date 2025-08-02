@@ -6,7 +6,17 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      
+
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: 0, transform: 'translateY(10px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        'fade-in': 'fade-in 0.3s ease-out',
+      },
+
       fontFamily: {
         sans: ['"Inter"', 'ui-sans-serif', 'system-ui'], // Default across app
         custom: ['"Poppins"', 'sans-serif'],
@@ -15,25 +25,25 @@ export default {
       boxShadow: {
         "button-glow": "var(--button-shadow)", // Dynamic button shadow
       },
-      
+
       colors: {
         primary: "var(--primary-color)", // Dynamic primary color
         primary2: "var(--primary-2-color)", // Dynamic secondary shade
         background: "var(--background-color)", // Dynamic background color
         text: "var(--text-color)", // Dynamic text color
-        
-        background: "hsl(var(--background))", // Add this line
-    foreground: "hsl(var(--foreground))", // Ensure foreground is also added
 
-    primary_home: {
-      DEFAULT: "hsl(var(--primary))",
-      foreground: "hsl(var(--primary-foreground))",
-    },
-    secondary: {
-      DEFAULT: "hsl(var(--secondary))",
-      foreground: "hsl(var(--secondary-foreground))",
-    },
-    
+        background: "hsl(var(--background))", // Add this line
+        foreground: "hsl(var(--foreground))", // Ensure foreground is also added
+
+        primary_home: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+
         color: {
           1: "#AC6AFF",
           2: "#FFC876",
@@ -62,7 +72,7 @@ export default {
         },
         border: "hsl(var(--border))", // Added this line to fix border-border issue
       },
-     
+
       fontFamily: {
         sans: ["var(--font-sora)", ...fontFamily.sans],
         code: "var(--font-code)",

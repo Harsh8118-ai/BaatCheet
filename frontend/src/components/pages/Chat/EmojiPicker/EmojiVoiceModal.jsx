@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { X, Mic, StopCircle, UploadCloud } from 'lucide-react';
 import axios from 'axios';
 
-const EmojiVoiceModal = ({ emojiObj, onClose, onUploadSuccess }) => {
+const   EmojiVoiceModal = ({ emojiObj, onClose, onUploadSuccess }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState(null);
   const [blob, setBlob] = useState(null);

@@ -31,38 +31,38 @@ const EmojiPicker = ({ onSelect, onClose }) => {
   const { voiceMap, updateVoice } = useEmojiVoices();
 
   const handleSelectEmoji = (emojiObj) => {
-  const emoji = emojiObj.emoji;
-  const soundUrl = voiceMap[emoji] || emojiObj.defaultSound;
+    const emoji = emojiObj.emoji;
+    const soundUrl = voiceMap[emoji] || emojiObj.defaultSound;
 
-  const audio = new Audio(soundUrl);
-  audio.play();
+    const audio = new Audio(soundUrl);
+    audio.play();
 
-  onSelect({
-    messageType: "emoji",
-    emoji,
-    emojiSoundUrl: soundUrl,
-  });
-};
-
+    onSelect({
+      messageType: 'emoji',
+      emoji,
+      emojiSoundUrl: soundUrl,
+    });
+  };
 
   const handleUploadSuccess = (messageType, emoji, emojiSoundUrl) => {
     updateVoice(messageType, emoji, emojiSoundUrl);
   };
 
   return (
-    <div className="bg-gray-300 rounded-lg shadow-lg p-2 absolute bottom-20 left-4 right-4 max-h-96 z-10">
-      <div className="flex justify-between items-center mb-2">
-        <span></span>
-        <div className="flex items-center space-x-2">
+    <div className="absolute bottom-24 left-4 right-4 sm:left-1/2 sm:translate-x-[-50%] max-w-xl mx-auto p-4 rounded-2xl backdrop-blur-lg bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 dark:bg-gray-900/80 shadow-2xl border border-purple-100 z-50 transition-all">
+      {/* Header Controls */}
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="text-md font-semibold text-gray-700 dark:text-white tracking-wide">Emoji Reactions</h3>
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setEditMode((prev) => !prev)}
-            className="text-gray-600 hover:text-gray-700"
+            className="text-gray-600 dark:text-gray-300 hover:text-purple-500 transition"
           >
             <Pencil size={20} />
           </button>
           <button
             onClick={onClose}
-            className="text-red-600 hover:text-gray-700 shadow-sm shadow-gray-700 rounded-xl"
+            className="text-red-500 hover:text-red-700 transition"
           >
             <X size={22} />
           </button>
@@ -70,32 +70,32 @@ const EmojiPicker = ({ onSelect, onClose }) => {
       </div>
 
       {/* Emoji Grid */}
-      <div className="grid grid-cols-6 gap-2 overflow-y-auto max-h-64">
+      <div className="grid grid-cols-6 sm:grid-cols-7 gap-4 overflow-y-auto max-h-64 px-1">
         {voiceEmojis.map((item) => {
           const isCustom = Boolean(voiceMap[item.emoji]);
           const soundUrl = isCustom ? voiceMap[item.emoji] : item.defaultSound;
 
           return (
-            <div key={item.emoji} className="flex flex-col items-center text-xl">
-              {/* Emoji Select/Preview */}
+            <div key={item.emoji} className="flex flex-col items-center text-center">
               <button
                 onClick={() =>
                   editMode
                     ? new Audio(soundUrl).play()
                     : handleSelectEmoji(item)
                 }
-                className="p-1 hover:bg-gray-100 rounded text-center"
+                className="text-2xl sm:text-3xl bg-white shadow-[0_3px_8px_rgba(0,0,0,0.15)] rounded-full p-2 transition-transform duration-150 hover:scale-110 hover:shadow-[0_6px_14px_rgba(0,0,0,0.2)]"
+                style={{
+                  boxShadow: 'inset -2px -2px 4px rgba(255,255,255,0.6), inset 2px 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15)',
+                }}
               >
                 {item.emoji}
               </button>
-
-              {/* Edit Button */}
               {editMode && (
                 <button
                   onClick={() => setSelectedEmoji(item.emoji)}
-                  className="text-xs text-gray-800 hover:underline mt-1 hover:scale-105"
+                  className="text-xs mt-1 text-purple-600 hover:underline transition hover:scale-105"
                 >
-                  {isCustom ? 'Change 🎙️' : 'Set🎙️'}
+                  {isCustom ? 'Change 🎙️' : 'Set 🎙️'}
                 </button>
               )}
             </div>

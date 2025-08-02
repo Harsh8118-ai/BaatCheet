@@ -319,6 +319,8 @@ const ChatApp = () => {
           handleSendMessage={handleSendMessage}
           isRecording={isRecording}
           toggleRecording={toggleRecording}
+          currentMood={currentTheme.accent}
+          currentText={currentTheme.text} 
         />
       </div>
     </div>
