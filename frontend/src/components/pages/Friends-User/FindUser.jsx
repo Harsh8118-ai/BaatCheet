@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { Dialog } from "@headlessui/react";
 import InviteCode from "./InviteCode";
 import { UserPlus } from "lucide-react";
+import { X } from 'lucide-react';
+
 
 const FindUser = () => {
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
@@ -123,75 +125,86 @@ const FindUser = () => {
         <span className="text-gray-900 text-sm font-semibold">Add Friend</span>
       </button>
 
-      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+     <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
+  {/* Overlay */}
+  <div className="fixed inset-0 bg-black/30 backdrop-blur-md" aria-hidden="true" />
 
-        <div className="flex items-center justify-center min-h-screen px-4 relative z-50">
-          <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-md w-full p-6">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-2 right-2 bg-gray-700 text-red-500 hover:text-black dark:hover:text-white text-lg rounded-xl px-1"
-            >
-              X
-            </button>
+  {/* Modal Container */}
+  <div className="flex items-center justify-center min-h-screen px-4 relative z-50">
+    <div className="relative bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-white/20 backdrop-blur-lg">
 
-            <Dialog.Title className="text-xl font-bold mb-2 text-center">
-              Add Friend by Code
-            </Dialog.Title>
-            <p className="text-sm text-gray-400 text-center mb-4">
-              Enter your friend's 6-digit code to connect with them.
-            </p>
+      {/* Close Button */}
+      <button
+        onClick={() => setIsModalOpen(false)}
+        className="absolute top-2 right-2 bg-white/10 text-white hover:bg-white/20 rounded-full p-1.5 transition"
+      >
+        <X size={20} />
+      </button>
 
-            <div className="flex justify-center gap-2 mb-4">
-              {digits.map((digit, idx) => (
-                <input
-                  key={idx}
-                  ref={(el) => (inputsRef.current[idx] = el)}
-                  type="text"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(idx, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(idx, e)}
-                  className="w-10 h-12 text-center text-xl border border-gray-500 dark:border-gray-700 rounded-md bg-gray-100 dark:bg-gray-800 text-black dark:text-white focus:outline-none"
-                />
-              ))}
-            </div>
+      {/* Title */}
+      <Dialog.Title className="text-2xl font-extrabold text-center mb-1 tracking-wide">
+        Add Friend by Code
+      </Dialog.Title>
+      <p className="text-sm text-white/80 text-center mb-4">
+        Enter your friend's 6-digit code to connect.
+      </p>
 
-            <InviteCode />
+      {/* Input Digits */}
+      <div className="flex justify-center gap-2 mb-4">
+        {digits.map((digit, idx) => (
+          <input
+            key={idx}
+            ref={(el) => (inputsRef.current[idx] = el)}
+            type="text"
+            maxLength={1}
+            value={digit}
+            onChange={(e) => handleChange(idx, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(idx, e)}
+            className="w-12 h-14 text-center text-xl font-bold text-white bg-white/10 rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-white"
+          />
+        ))}
+      </div>
 
-            {loading && <p className="text-sm text-purple-500 text-center mb-2">Searching...</p>}
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+      {/* Invite Section */}
+      <InviteCode />
 
-            {user && (
-              <div className="mt-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center">
-                <div className="w-16 h-16 rounded-full bg-purple-600 text-white flex items-center justify-center mx-auto mb-2 text-xl font-semibold uppercase">
-                  {user.username
-                    .split(" ")
-                    .map((word) => word[0])
-                    .join("")
-                    .slice(0, 2)}
-                </div>
+      {/* Loading / Error Feedback */}
+      {loading && <p className="text-sm text-white/80 text-center mb-2">Searching...</p>}
+      {error && <p className="text-red-200 text-sm text-center">{error}</p>}
 
-                <p className="text-sm text-gray-400">@{user.username}</p>
-                <p className="text-xs text-gray-500">Invite Code: {user.inviteCode}</p>
-
-                <button
-                  onClick={sendFriendRequest}
-                  className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md transition"
-                >
-                  Add Friend
-                </button>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="mt-2 w-full bg-gray-300 hover:bg-gray-400 text-black dark:text-white dark:bg-gray-700 py-2 rounded-md transition"
-                >
-                  Back
-                </button>
-              </div>
-            )}
+      {/* Found User */}
+      {user && (
+        <div className="mt-4 bg-white/10 backdrop-blur-md p-4 rounded-xl text-center shadow-inner border border-white/20">
+          <div className="w-16 h-16 rounded-full bg-white/20 text-white flex items-center justify-center mx-auto mb-2 text-xl font-semibold uppercase">
+            {user.username
+              .split(" ")
+              .map((word) => word[0])
+              .join("")
+              .slice(0, 2)}
           </div>
+
+          <p className="text-sm text-white/80">@{user.username}</p>
+          <p className="text-xs text-white/60">Invite Code: {user.inviteCode}</p>
+
+          <button
+            onClick={sendFriendRequest}
+            className="mt-4 w-full bg-white/20 hover:bg-white/30 text-white py-2 rounded-lg transition font-semibold"
+          >
+            Add Friend
+          </button>
+
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="mt-2 w-full border border-white/30 hover:bg-white/10 text-white py-2 rounded-lg transition"
+          >
+            Cancel
+          </button>
         </div>
-      </Dialog>
+      )}
+    </div>
+  </div>
+</Dialog>
+
     </div>
   );
 };
