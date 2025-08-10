@@ -40,7 +40,7 @@ const ChatMessage = ({
       case 'error':
         return <span className="text-red-500 text-xs">Failed</span>;
       default:
-        return <Check size={14} className="text-gray-400" />; 
+        return <Check size={14} className="text-gray-400" />;
     }
   };
  
