@@ -81,12 +81,12 @@ const ChatList = () => {
 
                     return (
                         <div key={chat._id} className="flex items-center gap-4 cursor-pointer hover:bg-gray-100 p-2 rounded-lg relative" onClick={() => handleMessage(otherUserId, chat.username, chat.profileUrl)}>
-                            <div className="relative w-12 h-12">
+                            <div className="relative w-14 h-14">
                                 {chat.profileUrl ? (
                                     <img
                                         src={chat.profileUrl}
                                         alt={`${chat.username}'s profile`}
-                                        className="w-14 h-14 rounded-full object-cover"
+                                        className="w-15 h-14 rounded-full object-cover"
                                     />
                                 ) : (
                                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-purple-400 to-blue-400 flex items-center justify-center text-white font-bold text-lg">
