@@ -107,7 +107,6 @@ const FriendList = () => {
                 )}
                 <div className="truncate max-w-[180px]">
                   <div className="font-semibold text-white truncate">{friend.username}</div>
-                  <div className="text-sm text-gray-400 capitalize truncate">{friend.status || "Unknown"}</div>
                 </div>
               </div>
 
