@@ -59,14 +59,14 @@ const ChatList = () => {
 
     // ✉️ Navigate to Chat Function
     // ✉️ Navigate to Chat Function
-  const handleMessage = (friendId, friendUsername, friendProfileUrl) => {
-  navigate(`/chat/${friendId}`, {
-    state: {
-      friendUsername,
-      friendProfileUrl
-    }
-  });
-};
+    const handleMessage = (friendId, friendUsername, friendProfileUrl) => {
+        navigate(`/chat/${friendId}`, {
+            state: {
+                friendUsername,
+                friendProfileUrl
+            }
+        });
+    };
 
 
 
@@ -102,21 +102,30 @@ const ChatList = () => {
 
                             <div className="flex-grow">
                                 <div className="font-medium">{chat.username || "Unknown"}</div>
+
                                 <div className="text-gray-500 text-sm truncate max-w-xs flex items-center gap-1 leading-tight">
+                                    {chat.senderId.toString() === userId && (
+                                        <span className="font-medium text-gray-700">You: </span>
+                                    )}
+
                                     {chat.messageType === "emoji"
-                                        ? `😊 ${chat.message.slice(0, 35)}${chat.message.length > 35 ? '...' : ''}`
+                                        ? `${chat.message.slice(0, 35)}${chat.message.length > 35 ? '...' : ''}`
                                         : `${chat.message.slice(0, 35)}${chat.message.length > 35 ? '...' : ''}`
                                     }
 
                                     {chat.senderId.toString() === userId && chat.status && (
                                         <span className="text-blue-500 text-xs ml-1">
-                                            {chat.status === "read" ? <CheckCheck size={16} className="text-blue-500 text-xs" /> :
-                                                chat.status === "delivered" ? <Check size={16} className="text-gray-500 text-xs" /> :
-                                                    <Clock />}
-
+                                            {chat.status === "read" ? (
+                                                <CheckCheck size={16} className="text-blue-500 text-xs" />
+                                            ) : chat.status === "delivered" ? (
+                                                <Check size={16} className="text-gray-500 text-xs" />
+                                            ) : (
+                                                <Clock />
+                                            )}
                                         </span>
                                     )}
                                 </div>
+
 
                             </div>
                             <div className="flex flex-col items-end gap-1 min-w-[48px]">
