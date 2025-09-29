@@ -45,6 +45,26 @@ router.get(
   }
 );
 
+
+
+// Facebook Authentication
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+);
+
+router.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", { session: false, failureRedirect: "/login" }),
+  (req, res) => {
+    if (!req.user) {
+      return res.redirect(`${CLIENT_URL}?error=Authentication Failed`);
+    }
+    const token = generateToken(req.user);
+    res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${token}&username=${req.user.username}`);
+  }
+);
+
 // OAuth Login Route (For Manual API Calls)
 router.post("/oauth", oauthLogin);
 

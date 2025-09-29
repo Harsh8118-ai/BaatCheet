@@ -9,7 +9,7 @@ const oauthUserSchema = new mongoose.Schema(
     },
     provider: {
       type: String,
-      enum: ["google", "github"],
+      enum: ["google", "github", "facebook"],
       required: true,
     },
     providerId: {
