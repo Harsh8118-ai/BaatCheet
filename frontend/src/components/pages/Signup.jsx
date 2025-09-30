@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { FaGoogle, FaGithub } from "react-icons/fa";
-import { FaFacebook } from "react-icons/fa";
+import {  FaGithub, FaFacebook } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -17,56 +15,57 @@ export default function Signup() {
   };
 
   return (
-    <>
-      <motion.div
-        className="bg-gray-950
- p-8 rounded-3xl shadow-md w-full brightness-95 border border-gray-500  max-w-md "
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+    <motion.div
+      className="bg-gray-950 p-8 rounded-3xl shadow-lg w-full max-w-md border border-gray-800"
+      initial={{ opacity: 0, y: -40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      {/* Heading */}
+      {/* <motion.h2
+        className="text-3xl font-bold mb-6 text-center text-gray-200"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
       >
-        <motion.h2
-          className="text-2xl font-bold mb-2 text-left text-gray-400"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
+        Create an Account
+      </motion.h2> */}
+
+      {/* OAuth Buttons */}
+      <div className="flex flex-col space-y-4">
+
+
+        {/* Google */}
+        <motion.button
+          onClick={() => handleOAuthLogin("google")}
+          className="flex items-center justify-center space-x-3 px-4 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-100 transition-all shadow-md"
+          whileTap={{ scale: 0.95 }}
         >
-          Create an Account
-        </motion.h2>
+          <FcGoogle className="w-5 h-5 text-[#DB4437]" />
+          <span>Continue with Google</span>
+        </motion.button>
 
-        {/* 🔹 OAuth Login Buttons */}
-        <div className="flex justify-center space-x-3">
-          <motion.button
-            onClick={() => handleOAuthLogin("github")}
-            className="flex items-center space-x-2 px-4 py-2 bg-[#0f0f0f] border border-gray-700 text-white rounded-md hover:bg-gray-800 transition-all"
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaGithub className="w-5 h-5" />
-            <span>GitHub</span>
-          </motion.button>
+        {/* Facebook */}
+        <motion.button
+          onClick={() => handleOAuthLogin("facebook")}
+          className="flex items-center justify-center space-x-3 px-4 py-3 bg-[#1877F2] text-white font-medium rounded-lg hover:bg-[#145db2] transition-all shadow-md"
+          whileTap={{ scale: 0.95 }}
+        >
+          <FaFacebook className="w-5 h-5" />
+          <span>Continue with Facebook</span>
+        </motion.button>
 
-          <motion.button
-            onClick={() => handleOAuthLogin("google")}
-            className="flex items-center space-x-2 px-4 py-2 bg-[#0f0f0f] border border-gray-700 text-white rounded-md hover:bg-gray-800 transition-all"
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaGoogle className="w-5 h-5" />
-            <span>Google</span>
-          </motion.button>
-
-          <motion.button
-            onClick={() => handleOAuthLogin("facebook")}
-            className="flex items-center space-x-2 px-4 py-2 bg-[#1877F2] text-white rounded-md hover:bg-[#145db2] transition-all"
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaFacebook className="w-5 h-5" />
-            <span>Facebook</span>
-          </motion.button>
-        </div>
-
-
-
-      </motion.div>
-    </>
+        {/* GitHub */}
+        <motion.button
+          onClick={() => handleOAuthLogin("github")}
+          className="flex items-center justify-center space-x-3 px-4 py-3 bg-[#24292F] text-white font-medium rounded-lg hover:bg-[#1b1f23] transition-all shadow-md"
+          whileTap={{ scale: 0.95 }}
+        >
+          <FaGithub className="w-5 h-5" />
+          <span>Continue with GitHub</span>
+        </motion.button>
+                
+      </div>
+    </motion.div>
   );
 }

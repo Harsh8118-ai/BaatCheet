@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import Login from './components/pages/Login';
 import Signup from './components/pages/Signup';
 
 
 const Auth = () => {
-  const [activeTab, setActiveTab] = useState('login');
- 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-950 text-black font-sans px-4">
-    
-      {/* Logo and Branding */} 
+
       <div className="text-center mb-6 transition-all duration-300 ease-in-out">
         <div className="flex justify-center items-center space-x-3">
           <img
@@ -19,30 +15,26 @@ const Auth = () => {
         <p className="text-gray-500 mt-2 text-lg sm:text-base ">Connect with friends instantly</p>
       </div>
 
-
-      {/* Tabs */}
-      <div className="w-full max-w-md mb-4 transition-all duration-300 ease-in-out">
-        <div className="flex border border-white/10 rounded-lg overflow-hidden bg-gray-950">
-          <button
-            className={`w-1/2 py-2 transition-all duration-300 ${activeTab === 'login' ? 'bg-gray-800 shadow font-semibold text-gray-500' : 'text-gray-200'}`}
-            onClick={() => setActiveTab('login')}
-          >
-            Login
-          </button>
-          <button
-            className={`w-1/2 py-2 transition-all duration-300 ${activeTab === 'signup' ? 'bg-gray-800 shadow font-semibold text-gray-500' : 'text-gray-200'}`}
-            onClick={() => setActiveTab('signup')}
-          >
-            Sign Up
-          </button>
-        </div>
-      </div>
-
-      {/* Form Card */}
       <div className="w-full max-w-md bg-gray-950 rounded-xl shadow-md px-5 transition-all duration-300 ease-in-out">
-        {activeTab === 'login' ? <Login /> : <Signup />}
+        <Signup />
       </div>
+
+      <div className="mt-16 text-center space-y-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-slate-200 text-balance">Ready to start chatting?</h2>
+        <p className="text-slate-400 max-w-md mx-auto">Login and connect with your friends in seconds</p>
+      </div>
+
+      {/* Footer  */}
+      <footer className="border-t border-slate-800 bottom-0 fixed">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-md text-slate-500">© 2025 BaatCheet. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
+
+
   );
 };
 
