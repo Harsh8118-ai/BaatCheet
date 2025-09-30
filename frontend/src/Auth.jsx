@@ -31,7 +31,7 @@ const Auth = () => {
             <p className="text-md text-slate-500">© 2025 BaatCheet. All rights reserved.</p>
           </div>
         </div>
-      </footer>
+      </footer> 
     </div>
 
 
