@@ -211,7 +211,7 @@ const Home = () => {
                 <div className="flex flex-col items-center text-sm text-gray-700 ml-1">
                     <FindUser />
                 </div>
-
+                
                 {(searchActive ? filteredFriends : friends).map((friend, idx) => (
                     <div key={idx} className="relative flex flex-col items-center text-sm text-gray-700">
                         <div className="relative" onClick={() => handleMessage(friend._id, friend.username, friend.profileUrl)}>
