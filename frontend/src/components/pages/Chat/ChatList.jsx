@@ -7,12 +7,11 @@ import { useNavigate } from "react-router-dom";
 const ChatList = () => {
     const [chats, setChats] = useState([]);
     const [onlineUserIds, setOnlineUserIds] = useState([]);
-    const [loading, setLoading] = useState(true); // ✅ loader state
+    const [loading, setLoading] = useState(true); 
     const navigate = useNavigate();
     const userId = localStorage.getItem('userId');
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-    // ✅ Initialize socket
     useChatSocket({
         userId,
         receiverId: null,
@@ -26,14 +25,14 @@ const ChatList = () => {
     useEffect(() => {
         const fetchChats = async () => {
             try {
-                setLoading(true); // show loader
+                setLoading(true);~
                 const res = await axios.get(`${BASE_URL}/chat/recent/${userId}`);
                 setChats(Array.isArray(res.data) ? res.data : []);
             } catch (err) {
                 console.error("Error fetching chats:", err);
                 setChats([]);
             } finally {
-                setLoading(false); // hide loader
+                setLoading(false); 
             }
         };
 
@@ -69,7 +68,6 @@ const ChatList = () => {
         <div className="mt-4">
             <h2 className="text-xl font-semibold mb-4">Chats</h2>
 
-            {/* ✅ Loader */}
             {loading ? (
                 <div className="flex-1 flex items-center justify-center mt-44">
                     <div className="flex flex-col items-center text-gray-600">
