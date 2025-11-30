@@ -44,7 +44,7 @@ const ChatMessage = ({
     }
   };
  
-  const renderMessageContent = () => {
+  const renderMessageContent = () => {  
     switch (message.messageType) {
       case 'image':
         return (
