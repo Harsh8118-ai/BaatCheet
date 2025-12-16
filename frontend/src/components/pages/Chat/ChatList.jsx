@@ -25,7 +25,7 @@ const ChatList = () => {
     useEffect(() => {
         const fetchChats = async () => {
             try {
-                setLoading(true);~
+                setLoading(true);
                 const res = await axios.get(`${BASE_URL}/chat/recent/${userId}`);
                 setChats(Array.isArray(res.data) ? res.data : []);
             } catch (err) {
