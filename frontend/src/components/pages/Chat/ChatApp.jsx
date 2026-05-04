@@ -306,7 +306,7 @@ const ChatApp = () => {
             onClose={() => setShowEmojiPicker(false)}
           />
 
-        )}
+        )}  
         <MessageInput
           inputValue={inputValue}
           setInputValue={setInputValue}
