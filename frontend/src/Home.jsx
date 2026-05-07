@@ -263,7 +263,7 @@ const Home = () => {
                                 >
                                     <X className="w-4 h-4" />
                                     
-                                </button>
+                                </button>  
                             </div>
                         )}
 
