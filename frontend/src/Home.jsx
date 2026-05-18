@@ -271,7 +271,6 @@ const Home = () => {
                     </div>
                 ))}
             </div>
-  
             <ChatList />
         </div>
     );
