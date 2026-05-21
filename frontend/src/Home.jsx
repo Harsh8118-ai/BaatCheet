@@ -270,7 +270,7 @@ const Home = () => {
                         <span className="text-gray-900 font-bold text-sm">{friend.username?.slice(0,12)}</span>
                     </div>
                 ))}
-            </div>
+            </div>  
             <ChatList />
         </div>
     );
